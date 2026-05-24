@@ -17,3 +17,7 @@ Notes:
 - All assets are referenced via absolute CDN links; no build step required.
 
 If you want, I can rename `Untitled-1.html` to `index.html` for you now so the project is deploy-ready immediately.
+
+## Font Attribution
+The FontStruction “RetroPix” (https://fontstruct.com/fontstructions/show/1716995) by Brandon Kleeman is licensed under a Creative Commons Attribution license (http://creativecommons.org/licenses/by/3.0/).
+

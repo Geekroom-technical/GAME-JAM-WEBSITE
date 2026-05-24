@@ -1,1313 +1,449 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Geek n Jam — Build. Experiment. Invert expectations.</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-<style>
-  :root {
-    --px: 2px;
-    --c-bg: #0d0b14;
-    --c-bg2: #141020;
-    --c-bg3: #1a1530;
-    --c-purple: #c084fc;
-    --c-pink: #f472b6;
-    --c-cyan: #67e8f9;
-    --c-yellow: #fbbf24;
-    --c-green: #4ade80;
-    --c-white: #f0eafb;
-    --c-muted: #8b7fa8;
-    --pixel-border: 3px solid;
-    --font-pixel: 'Press Start 2P', monospace;
-    --font-body: 'DM Sans', sans-serif;
-    --font-mono: 'DM Mono', monospace;
-  }
-
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-  body {
-    background: var(--c-bg);
-    color: var(--c-white);
-    font-family: var(--font-body);
-    font-size: 16px;
-    line-height: 1.7;
-    overflow-x: hidden;
-  }
-
-  /* ── SCANLINE OVERLAY ── */
-  body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.08) 2px, rgba(0,0,0,0.08) 4px);
-    pointer-events: none;
-    z-index: 100;
-  }
-
-  /* ── STAR FIELD ── */
-  .stars {
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    z-index: 0;
-    overflow: hidden;
-  }
-  .star {
-    position: absolute;
-    background: white;
-    border-radius: 0;
-    animation: twinkle var(--d, 3s) infinite alternate var(--dl, 0s);
-  }
-  @keyframes twinkle { from { opacity: 0.1; } to { opacity: 0.8; } }
-
-  /* ── LAYOUT ── */
-  .wrap { max-width: 860px; margin: 0 auto; padding: 0 2rem; position: relative; z-index: 1; }
-
-  /* ── PIXEL BORDER UTILITY ── */
-  .pixel-box {
-    position: relative;
-    border: 3px solid var(--c-purple);
-    image-rendering: pixelated;
-    box-shadow: 6px 6px 0 var(--c-pink), inset 0 0 40px rgba(192,132,252,0.05);
-  }
-  .pixel-box::before {
-    content: '';
-    position: absolute;
-    inset: -7px;
-    border: 2px solid rgba(192,132,252,0.2);
-    pointer-events: none;
-  }
-
-  /* ── HERO ── */
-  .hero {
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    padding: 4rem 2rem 3rem;
-    position: relative;
-  }
-
-  .hero-title {
-    font-family: var(--font-pixel);
-    font-size: clamp(24px, 5vw, 48px);
-    line-height: 1.5;
-    color: var(--c-white);
-    text-shadow: 0 0 20px rgba(192,132,252,0.6), 4px 4px 0 #4c1d95;
-    margin-bottom: 0.5rem;
-    animation: flicker 6s infinite;
-  }
-  .hero-title span { color: var(--c-purple); }
-
-  .hero-collab {
-    font-family: var(--font-pixel);
-    font-size: clamp(12px, 2.2vw, 16px);
-    color: var(--c-yellow);
-    letter-spacing: 0.18em;
-    margin-top: 0.25rem;
-    margin-bottom: 0.75rem;
-    text-transform: uppercase;
-    font-weight: 700;
-    text-shadow: 3px 3px 0 rgba(76,29,149,0.25);
-  }
-
-  @keyframes flicker {
-    0%,92%,100% { opacity: 1; }
-    93% { opacity: 0.9; }
-    94% { opacity: 1; }
-    96% { opacity: 0.85; }
-    97% { opacity: 1; }
-  }
-
-  .hero-sub {
-    font-family: var(--font-pixel);
-    font-size: clamp(10px, 2vw, 14px);
-    color: var(--c-pink);
-    letter-spacing: 0.1em;
-    margin-bottom: 2.5rem;
-    text-shadow: 2px 2px 0 #831843;
-  }
-
-  .hero-desc {
-    font-size: 17px;
-    color: var(--c-muted);
-    max-width: 560px;
-    margin: 0 auto 3rem;
-    line-height: 1.8;
-  }
-  .hero-desc strong { color: var(--c-white); font-weight: 500; }
-
-  .hero-cta {
-    display: flex;
-    gap: 1rem;
-    flex-wrap: wrap;
-    justify-content: center;
-    margin-bottom: 4rem;
-  }
-
-  /* ── PIXEL DECORATION: FLOATING SPRITES ── */
-  .sprite-grid {
-    display: grid;
-    grid-template-columns: repeat(8, 1fr);
-    gap: 4px;
-    width: 64px;
-    height: 64px;
-    image-rendering: pixelated;
-  }
-  .sprite-cell {
-    width: 8px;
-    height: 8px;
-  }
-
-  .floating-sprites {
-    position: absolute;
-    pointer-events: none;
-    z-index: 0;
-  }
-
-  /* ── PIXEL ART DECORATIONS (SVG-based) ── */
-  .pixel-deco {
-    position: absolute;
-    image-rendering: pixelated;
-    opacity: 0.6;
-    animation: float var(--fd, 4s) ease-in-out infinite alternate;
-  }
-  @keyframes float {
-    from { transform: translateY(0px) rotate(0deg); }
-    to { transform: translateY(-12px) rotate(2deg); }
-  }
-
-  /* ── SCROLL INDICATOR ── */
-  .scroll-hint {
-    position: absolute;
-    bottom: 2rem;
-    left: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 6px;
-    font-family: var(--font-mono);
-    font-size: 10px;
-    color: var(--c-muted);
-    letter-spacing: 0.2em;
-    animation: bounce-down 2s ease-in-out infinite;
-  }
-  @keyframes bounce-down {
-    0%,100% { transform: translateX(-50%) translateY(0); }
-    50% { transform: translateX(-50%) translateY(6px); }
-  }
-
-  /* ── SECTION STYLES ── */
-  section {
-    padding: 5rem 0;
-    position: relative;
-    z-index: 1;
-  }
-
-  .section-label {
-    font-family: var(--font-pixel);
-    font-size: 9px;
-    color: var(--c-cyan);
-    letter-spacing: 0.3em;
-    text-transform: uppercase;
-    margin-bottom: 0.75rem;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-  .section-label::after {
-    content: '';
-    flex: 1;
-    height: 1px;
-    background: linear-gradient(90deg, rgba(103,232,249,0.4), transparent);
-  }
-
-  .section-title {
-    font-family: var(--font-pixel);
-    font-size: clamp(14px, 2.5vw, 20px);
-    color: var(--c-white);
-    text-shadow: 3px 3px 0 #4c1d95;
-    margin-bottom: 2.5rem;
-    line-height: 1.6;
-  }
-  .section-title .accent { color: var(--c-purple); }
-
-  /* ── THEME REVEAL CARD ── */
-  .theme-card {
-    background: var(--c-bg2);
-    border: 3px solid var(--c-purple);
-    box-shadow: 8px 8px 0 #4c1d95;
-    padding: 3rem;
-    text-align: center;
-    position: relative;
-    overflow: hidden;
-  }
-  .theme-card::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(circle at 50% 0%, rgba(192,132,252,0.15), transparent 70%);
-    pointer-events: none;
-  }
-  .theme-card .reveal-text {
-    font-family: var(--font-pixel);
-    font-size: clamp(12px, 2vw, 18px);
-    color: var(--c-yellow);
-    text-shadow: 2px 2px 0 #78350f;
-    animation: flicker 4s infinite;
-  }
-  .theme-card .reveal-sub {
-    font-size: 14px;
-    color: var(--c-muted);
-    margin-top: 1rem;
-    font-family: var(--font-mono);
-  }
-
-  /* ── INFO GRID ── */
-  .info-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 1rem;
-    justify-items: stretch;
-    margin-bottom: 2rem;
-  }
-
-  .info-card {
-    background: var(--c-bg2);
-    border: 2px solid rgba(192,132,252,0.3);
-    padding: 1rem 1.25rem;
-    position: relative;
-    transition: border-color 0.2s, box-shadow 0.2s;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    height: 100%;
-    aspect-ratio: 1 / 1; /* enforce square cards */
-    min-height: 140px; /* fallback for older browsers */
-    align-items: center;
-  }
-  .info-card:hover {
-    border-color: var(--c-purple);
-    box-shadow: 4px 4px 0 rgba(192,132,252,0.3);
-  }
-  .info-card::after {
-    content: '';
-    position: absolute;
-    top: -2px; left: -2px; right: -2px; bottom: -2px;
-    border: 1px solid rgba(192,132,252,0.1);
-    pointer-events: none;
-  }
-
-  .info-card-icon {
-    width: 32px;
-    height: 32px;
-    margin-bottom: 1rem;
-    image-rendering: pixelated;
-  }
-
-  .info-card-label {
-    font-family: var(--font-mono);
-    font-size: 10px;
-    letter-spacing: 0.25em;
-    text-transform: uppercase;
-    color: var(--c-cyan);
-    margin-bottom: 0.5rem;
-  }
-
-  .info-card-value {
-    font-size: 16px;
-    color: var(--c-white);
-    font-weight: 500;
-    line-height: 1.4;
-    display: block;
-    text-align: center;
-  }
-
-  /* ── REQUIREMENTS LIST ── */
-  .req-list {
-    list-style: none;
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-  }
-
-  .req-list li {
-    display: flex;
-    align-items: flex-start;
-    gap: 12px;
-    font-size: 15px;
-    color: #c4b5d4;
-    padding: 0.75rem 1rem;
-    background: var(--c-bg2);
-    border-left: 3px solid var(--c-purple);
-    transition: border-color 0.15s, background 0.15s;
-  }
-  .req-list li:hover {
-    border-left-color: var(--c-pink);
-    background: var(--c-bg3);
-  }
-
-  .req-list li .bullet {
-    font-family: var(--font-pixel);
-    font-size: 8px;
-    color: var(--c-purple);
-    margin-top: 4px;
-    flex-shrink: 0;
-  }
-
-  /* ── RULES GRID ── */
-  .rules-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1rem;
-  }
-
-  .rule-pill {
-    border: 2px solid;
-    padding: 1rem 1.25rem;
-    font-size: 13px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-  .rule-pill.no { border-color: rgba(244,114,182,0.5); background: rgba(244,114,182,0.05); color: #f9a8d4; }
-  .rule-pill.yes { border-color: rgba(74,222,128,0.5); background: rgba(74,222,128,0.05); color: #86efac; }
-
-  .rule-pill-icon {
-    font-family: var(--font-pixel);
-    font-size: 8px;
-    padding: 3px 5px;
-    flex-shrink: 0;
-  }
-  .rule-pill.no .rule-pill-icon { background: rgba(244,114,182,0.2); color: var(--c-pink); }
-  .rule-pill.yes .rule-pill-icon { background: rgba(74,222,128,0.2); color: var(--c-green); }
-
-  /* ── CATEGORIES ── */
-  .categories-wrap {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.75rem;
-  }
-
-  .cat-tag {
-    font-family: var(--font-pixel);
-    font-size: 8px;
-    padding: 8px 14px;
-    border: 2px solid;
-    letter-spacing: 0.05em;
-    position: relative;
-    transition: transform 0.1s;
-  }
-  .cat-tag:hover { transform: translate(-2px, -2px); }
-  .cat-tag::after { content: ''; position: absolute; bottom: -5px; right: -5px; width: 100%; height: 100%; border: 2px solid; z-index: -1; }
-
-  .cat-tag:nth-child(1) { border-color: var(--c-purple); color: var(--c-purple); }
-  .cat-tag:nth-child(1)::after { border-color: #4c1d95; }
-  .cat-tag:nth-child(2) { border-color: var(--c-pink); color: var(--c-pink); }
-  .cat-tag:nth-child(2)::after { border-color: #831843; }
-  .cat-tag:nth-child(3) { border-color: var(--c-cyan); color: var(--c-cyan); }
-  .cat-tag:nth-child(3)::after { border-color: #155e75; }
-  .cat-tag:nth-child(4) { border-color: var(--c-yellow); color: var(--c-yellow); }
-  .cat-tag:nth-child(4)::after { border-color: #78350f; }
-  .cat-tag:nth-child(5) { border-color: var(--c-green); color: var(--c-green); }
-  .cat-tag:nth-child(5)::after { border-color: #14532d; }
-  .cat-tag:nth-child(6) { border-color: #a78bfa; color: #a78bfa; }
-  .cat-tag:nth-child(6)::after { border-color: #3730a3; }
-
-  /* ── PRIZE TEASER ── */
-  .prize-tease {
-    background: var(--c-bg2);
-    border: 3px solid var(--c-yellow);
-    box-shadow: 6px 6px 0 #78350f;
-    padding: 2.5rem;
-    text-align: center;
-  }
-  .prize-tease .trophy {
-    font-family: var(--font-pixel);
-    font-size: 11px;
-    color: var(--c-yellow);
-    text-shadow: 2px 2px 0 #78350f;
-    margin-bottom: 0.75rem;
-    display: block;
-  }
-  .prize-tease p {
-    color: var(--c-muted);
-    font-size: 15px;
-  }
-  .blink { animation: blink-anim 1s step-end infinite; }
-  @keyframes blink-anim { 50% { opacity: 0; } }
-
-  /* ── SPECIAL CARDS ── */
-  .special-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 1.25rem;
-  }
-  .special-card {
-    background: var(--c-bg3);
-    border: 2px solid rgba(103,232,249,0.25);
-    padding: 1.75rem 1.5rem;
-    position: relative;
-  }
-  .special-card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 2px;
-    background: linear-gradient(90deg, var(--c-cyan), var(--c-purple));
-  }
-  .special-card-num {
-    font-family: var(--font-pixel);
-    font-size: 9px;
-    color: var(--c-cyan);
-    margin-bottom: 0.75rem;
-  }
-  .special-card-title {
-    font-size: 16px;
-    font-weight: 600;
-    color: var(--c-white);
-    margin-bottom: 0.5rem;
-  }
-  .special-card-desc {
-    font-size: 14px;
-    color: var(--c-muted);
-    line-height: 1.6;
-  }
-
-  /* ── WEEKS / EVENT SCHEDULE GRID ── */
-  .weeks-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-    gap: 1rem;
-    align-items: stretch;
-  }
-  .week-card {
-    background: var(--c-bg2);
-    border: 2px solid rgba(192,132,252,0.14);
-    padding: 1rem;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    justify-content:center;
-    min-height:120px;
-    text-align:center;
-    border-radius:8px;
-  }
-  .week-num { font-family:var(--font-pixel); color:var(--c-purple); font-size:12px; margin-bottom:6px; }
-  .week-dates { font-size:14px; font-weight:600; color:var(--c-white); margin-bottom:6px; }
-  .week-speaker { font-size:13px; color:var(--c-muted); font-family:var(--font-mono); }
-  .final-week { margin-top:1rem; display:flex; justify-content:center; }
-  .final-week .week-card { border-color: var(--c-yellow); box-shadow: 6px 6px 0 rgba(120,53,15,0.08); }
-
-  /* ── SHOWCASE BANNER ── */
-  .showcase-banner {
-    background: linear-gradient(135deg, rgba(192,132,252,0.15), rgba(103,232,249,0.08));
-    border: 2px solid rgba(192,132,252,0.4);
-    padding: 2.5rem;
-    display: grid;
-    grid-template-columns: 1fr auto;
-    gap: 2rem;
-    align-items: center;
-  }
-  .showcase-banner h3 {
-    font-family: var(--font-pixel);
-    font-size: clamp(10px, 1.5vw, 14px);
-    color: var(--c-purple);
-    margin-bottom: 0.75rem;
-    line-height: 1.6;
-  }
-  .showcase-banner p {
-    font-size: 15px;
-    color: #c4b5d4;
-  }
-
-  /* ── BUTTONS ── */
-  .btn {
-    font-family: var(--font-pixel);
-    font-size: 9px;
-    padding: 14px 22px;
-    border: 3px solid;
-    cursor: pointer;
-    text-decoration: none;
-    display: inline-block;
-    letter-spacing: 0.05em;
-    position: relative;
-    transition: transform 0.1s;
-    line-height: 1;
-  }
-  .btn:active { transform: translate(3px, 3px); }
-
-  .btn-primary {
-    background: var(--c-purple);
-    border-color: #7c3aed;
-    color: #0d0b14;
-    box-shadow: 4px 4px 0 #4c1d95;
-  }
-  .btn-primary:hover { box-shadow: 6px 6px 0 #4c1d95; }
-  .btn-primary:active { box-shadow: none; }
-
-  .btn-outline {
-    background: transparent;
-    border-color: var(--c-cyan);
-    color: var(--c-cyan);
-    box-shadow: 4px 4px 0 #155e75;
-  }
-  .btn-outline:hover { box-shadow: 6px 6px 0 #155e75; }
-  .btn-outline:active { box-shadow: none; }
-
-  /* ── DIVIDER ── */
-  .divider {
-    height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(192,132,252,0.4), transparent);
-    margin: 0;
-  }
-  .divider-pixel {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    padding: 1.5rem 0;
-    color: rgba(192,132,252,0.4);
-    font-family: var(--font-pixel);
-    font-size: 8px;
-    letter-spacing: 0.4em;
-  }
-
-  /* ── FOOTER ── */
-  footer {
-    padding: 4rem 0 3rem;
-    text-align: center;
-    position: relative;
-    z-index: 1;
-    border-top: 1px solid rgba(192,132,252,0.2);
-  }
-  footer .tagline {
-    font-family: var(--font-pixel);
-    font-size: clamp(9px, 1.5vw, 12px);
-    color: var(--c-purple);
-    letter-spacing: 0.1em;
-    margin-bottom: 1.5rem;
-    text-shadow: 2px 2px 0 #4c1d95;
-  }
-  footer .sub {
-    font-size: 13px;
-    color: var(--c-muted);
-  }
-  footer a { color: var(--c-cyan); text-decoration: none; }
-  footer a:hover { text-decoration: underline; }
-
-  /* ── PIXEL ART SPRITES SVG ── */
-  .pixel-scene {
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    margin: 3rem 0 2rem;
-    opacity: 0.85;
-  }
-
-  /* ── MARQUEE ── */
-  .marquee-wrap {
-    overflow: hidden;
-    border-top: 1px solid rgba(192,132,252,0.2);
-    border-bottom: 1px solid rgba(192,132,252,0.2);
-    padding: 12px 0;
-    margin: 0;
-    background: rgba(192,132,252,0.04);
-  }
-  .marquee-inner {
-    display: flex;
-    gap: 0;
-    animation: marquee 18s linear infinite;
-    width: max-content;
-  }
-  @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
-  .marquee-item {
-    font-family: var(--font-pixel);
-    font-size: 9px;
-    color: var(--c-muted);
-    padding: 0 2.5rem;
-    letter-spacing: 0.1em;
-    white-space: nowrap;
-  }
-  .marquee-item span { color: var(--c-purple); margin-right: 0.5rem; }
-
-  /* ── PROGRESS / TIMELINE ── */
-  .timeline {
-    display: flex;
-    flex-direction: column;
-    gap: 0;
-    position: relative;
-    padding-left: 2rem;
-  }
-  .timeline::before {
-    content: '';
-    position: absolute;
-    left: 6px;
-    top: 8px;
-    bottom: 8px;
-    width: 2px;
-    background: linear-gradient(180deg, var(--c-purple), var(--c-pink), rgba(192,132,252,0.1));
-  }
-  .tl-item {
-    position: relative;
-    padding: 0 0 2rem 2rem;
-  }
-  .tl-item::before {
-    content: '';
-    position: absolute;
-    left: -1.75rem;
-    top: 6px;
-    width: 10px;
-    height: 10px;
-    background: var(--c-purple);
-    border: 2px solid var(--c-bg);
-    image-rendering: pixelated;
-  }
-  .tl-item.active::before { background: var(--c-yellow); box-shadow: 0 0 8px var(--c-yellow); }
-  .tl-label {
-    font-family: var(--font-mono);
-    font-size: 11px;
-    color: var(--c-cyan);
-    letter-spacing: 0.15em;
-    margin-bottom: 0.25rem;
-  }
-  .tl-title {
-    font-size: 15px;
-    color: var(--c-white);
-    font-weight: 500;
-  }
-  .tl-desc { font-size: 13px; color: var(--c-muted); margin-top: 0.2rem; }
-
-  /* ── DISCORD CTA ── */
-  .discord-block {
-    background: var(--c-bg2);
-    border: 2px solid rgba(114,137,218,0.5);
-    box-shadow: 5px 5px 0 rgba(114,137,218,0.25);
-    padding: 2rem 2.5rem;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 1.5rem;
-  }
-  .discord-block .label {
-    font-family: var(--font-pixel);
-    font-size: 9px;
-    color: #7289da;
-    margin-bottom: 0.5rem;
-    letter-spacing: 0.1em;
-  }
-  .discord-block p { font-size: 15px; color: var(--c-muted); }
-
-  /* ── FADE-IN ANIMATION ── */
-  .fade-up {
-    opacity: 0;
-    transform: translateY(20px);
-    transition: opacity 0.6s ease, transform 0.6s ease;
-  }
-  .fade-up.visible {
-    opacity: 1;
-    transform: translateY(0);
-  }
-
-  @media (max-width: 600px) {
-    .showcase-banner { grid-template-columns: 1fr; }
-    .hero-title { font-size: 20px; }
-  }
-  .promo-details { margin: 1.25rem 0 1.5rem; font-family: var(--font-mono); color: var(--c-muted); display:flex; gap:1rem; align-items:stretch; justify-content:space-between; flex-wrap:wrap; font-size:13px; max-width:900px; margin-left:auto; margin-right:auto; }
-  .promo-details > div { flex: 1 1 260px; min-width: 200px; text-align: center; padding: 8px 12px; }
-  .promo-details a { color: var(--c-cyan); text-decoration: none; border-bottom: 1px dashed rgba(103,232,249,0.15); }
-  /* footer social links */
-  .social-links { display:flex; gap:0.6rem; justify-content:center; align-items:center; margin:0.75rem 0; flex-wrap:wrap; }
-  .social-link { font-family:var(--font-mono); font-size:13px; color:var(--c-bg); background:var(--c-cyan); padding:8px 12px; border-radius:6px; text-decoration:none; box-shadow:3px 3px 0 rgba(0,0,0,0.2); transition:transform 0.08s; display:inline-flex; align-items:center; justify-content:center; min-width:120px; }
-  .social-link:hover { transform:translateY(-2px); }
-  .social-link.itch { background: linear-gradient(90deg,#ff8a00,#e52e71); color: #0d0b14; }
-  .social-link.discord { background: #5865f2; }
-  .social-link.whatsapp { background: #25D366; color: #0d0b14; }
-  .social-link.insta { background: radial-gradient(circle at 30% 30%, #feda75, #d62976 30%, #962fbf 60%, #4f5bd5 100%); }
-  @media (max-width: 720px) {
-    .promo-details { flex-direction: column; gap:0.5rem; }
-    .promo-details > div { min-width: auto; width: 100%; }
-    .social-link { min-width: 140px; padding:10px 14px; }
-  }
-
-  /* Tabs styling */
-  .tabs { padding: 2rem 0; }
-  .tabs-nav .tab-btn {
-    font-family: var(--font-mono);
-    background: transparent;
-    border: 2px solid rgba(192,132,252,0.12);
-    color: var(--c-white);
-    padding: 10px 14px;
-    border-radius: 8px;
-    cursor: pointer;
-  }
-  .tabs-nav .tab-btn[aria-selected="true"] { background: linear-gradient(90deg, rgba(192,132,252,0.12), rgba(103,232,249,0.06)); box-shadow: 4px 4px 0 rgba(76,29,149,0.25); border-color: var(--c-purple); }
-  .tab-panel { display:block; }
-  .tab-panel[hidden] { display:none; }
-
-  /* Timer styles */
-  .timers { display:flex; gap:0.75rem; justify-content:center; align-items:center; margin-bottom:1rem; }
-  .timer { font-family:var(--font-mono); background:var(--c-bg2); border:2px solid rgba(192,132,252,0.15); padding:8px 12px; border-radius:8px; font-size:13px; color:var(--c-white); min-width:160px; text-align:center; }
-  .timer .t-val { display:block; margin-top:4px; font-family:var(--font-pixel); font-size:15px; color:var(--c-purple); }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Geek n Jam — Build. Experiment. Invert expectations.</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
-<!-- Star field -->
-<div class="stars" id="stars"></div>
+  <!-- Star field -->
+  <div class="stars" id="stars"></div>
 
-<!-- ── MARQUEE ── -->
-<div class="marquee-wrap">
-  <div class="marquee-inner" id="marquee"></div>
-</div>
+  <!-- ── MARQUEE ── -->
+  <div class="marquee-wrap">
+    <div class="marquee-inner" id="marquee"></div>
+  </div>
 
-<!-- ── HERO ── -->
-<header class="hero">
-  <!-- Pixel art floating decorations -->
-  <svg class="pixel-deco" style="top:8%;left:5%;width:48px;--fd:5s" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <rect x="6" y="0" width="4" height="2" fill="#c084fc"/>
-    <rect x="4" y="2" width="8" height="2" fill="#c084fc"/>
-    <rect x="2" y="4" width="12" height="2" fill="#c084fc"/>
-    <rect x="0" y="6" width="16" height="4" fill="#a855f7"/>
-    <rect x="2" y="10" width="12" height="2" fill="#c084fc"/>
-    <rect x="4" y="12" width="8" height="2" fill="#c084fc"/>
-    <rect x="6" y="14" width="4" height="2" fill="#c084fc"/>
-    <rect x="6" y="4" width="2" height="2" fill="#fbbf24"/>
-    <rect x="8" y="6" width="2" height="2" fill="#fbbf24"/>
-  </svg>
+  <!-- ── HERO ── -->
+  <header class="hero">
+    <!-- Floating clouds and moon in the background sky, matching the poster -->
+    <img src="assets/moon.png" class="hero-sprite hero-moon" alt="Moon">
+    <img src="assets/cloud_1.png" class="hero-sprite hero-cloud cloud-1" alt="Cloud 1">
+    <img src="assets/cloud_2.png" class="hero-sprite hero-cloud cloud-2" alt="Cloud 2">
+    <img src="assets/cloud_3.png" class="hero-sprite hero-cloud cloud-3" alt="Cloud 3">
+    <img src="assets/cloud_4.png" class="hero-sprite hero-cloud cloud-4" alt="Cloud 4">
 
-  <svg class="pixel-deco" style="top:15%;right:8%;width:40px;--fd:3.5s" viewBox="0 0 16 16" fill="none">
-    <rect x="3" y="0" width="10" height="2" fill="#67e8f9"/>
-    <rect x="1" y="2" width="14" height="2" fill="#67e8f9"/>
-    <rect x="0" y="4" width="16" height="8" fill="#06b6d4"/>
-    <rect x="1" y="12" width="14" height="2" fill="#67e8f9"/>
-    <rect x="3" y="14" width="10" height="2" fill="#67e8f9"/>
-    <rect x="5" y="6" width="2" height="4" fill="#0e7490"/>
-    <rect x="9" y="6" width="2" height="4" fill="#0e7490"/>
-  </svg>
+    <div class="wrap" style="position:relative;z-index:2">
 
-  <svg class="pixel-deco" style="bottom:20%;left:8%;width:36px;--fd:6s" viewBox="0 0 16 16" fill="none">
-    <rect x="7" y="0" width="2" height="4" fill="#f472b6"/>
-    <rect x="5" y="2" width="6" height="2" fill="#f472b6"/>
-    <rect x="4" y="4" width="8" height="8" fill="#ec4899"/>
-    <rect x="6" y="12" width="4" height="2" fill="#f472b6"/>
-    <rect x="5" y="14" width="2" height="2" fill="#f472b6"/>
-    <rect x="9" y="14" width="2" height="2" fill="#f472b6"/>
-    <rect x="5" y="6" width="2" height="2" fill="#fdf2f8"/>
-    <rect x="9" y="6" width="2" height="2" fill="#fdf2f8"/>
-    <rect x="6" y="9" width="4" height="1" fill="#fdf2f8"/>
-  </svg>
+      <h1 class="hero-title">
+        GEEK <span>n</span> JAM
+      </h1>
+      <p class="hero-collab">IN COLLABORATION WITH GAME DEVELOPERS ASSOCIATION OF INDIA</p>
+      <!-- Timers: countdown to start (May 30) and countdown to end (July 25) -->
+      <div class="timers" aria-hidden="false" style="margin-top:0.6rem">
+        <div class="timer" id="timer-to-start" aria-live="polite" role="status">Starts in: <span class="t-val">--</span>
+        </div>
+        <div class="timer" id="timer-to-end" aria-live="polite" role="status">Ends in: <span class="t-val">--</span>
+        </div>
+      </div>
+      <p class="hero-sub">Build · Experiment · Invert Expectations</p>
 
-  <svg class="pixel-deco" style="bottom:25%;right:6%;width:32px;--fd:4.5s" viewBox="0 0 16 16" fill="none">
-    <rect x="4" y="8" width="8" height="6" fill="#fbbf24"/>
-    <rect x="2" y="10" width="12" height="2" fill="#f59e0b"/>
-    <rect x="0" y="12" width="16" height="2" fill="#d97706"/>
-    <rect x="1" y="14" width="14" height="2" fill="#b45309"/>
-    <rect x="6" y="4" width="4" height="4" fill="#fbbf24"/>
-    <rect x="4" y="6" width="8" height="2" fill="#fbbf24"/>
-    <rect x="6" y="2" width="4" height="2" fill="#fef3c7"/>
-    <rect x="7" y="0" width="2" height="2" fill="#fef3c7"/>
-  </svg>
+      <p class="hero-desc">
+        A month-long <strong>game development jam</strong> bringing together developers, artists, and designers to build
+        unique, portfolio-worthy games from scratch.
+      </p>
 
-  <div class="wrap" style="position:relative;z-index:2">
+      <div class="promo-details" aria-hidden="false">
+        <div><strong>📅 May 30 – June 25, 2026</strong></div>
+        <div>Who can join: College students across India · Solo players or full squads · Coders, artists, designers
+          welcome</div>
+        <div>Submit via <a href="https://itch.io/jam/geek-n-jam" target="_blank"
+            rel="noopener">itch.io/jam/geek-n-jam</a></div>
+      </div>
 
-    <h1 class="hero-title">
-      GEEK <span>n</span> JAM
-    </h1>
-    <p class="hero-collab">IN COLLABORATION WITH IIITD AND IGDA</p>
-    <!-- Timers: countdown to start (May 30) and countdown to end (July 25) -->
-    <div class="timers" aria-hidden="false" style="margin-top:0.6rem">
-      <div class="timer" id="timer-to-start" aria-live="polite" role="status">Starts in: <span class="t-val">--</span></div>
-      <div class="timer" id="timer-to-end" aria-live="polite" role="status">Ends in: <span class="t-val">--</span></div>
-    </div>
-    <p class="hero-sub">Build · Experiment · Invert Expectations</p>
-
-    <p class="hero-desc">
-      A month-long <strong>game development jam</strong> bringing together developers, artists, and designers to build unique, portfolio-worthy games from scratch.
-    </p>
-
-    <div class="promo-details" aria-hidden="false">
-      <div><strong>📅 May 30 – June 25, 2026</strong></div>
-      <div>Who can join: College students across India · Solo players or full squads · Coders, artists, designers welcome</div>
-      <div>Submit via <a href="https://itch.io/jam/geek-n-jam" target="_blank" rel="noopener">itch.io/jam/geek-n-jam</a></div>
+      <div class="hero-cta">
+        <a href="#details" class="btn btn-primary">► START HERE</a>
+        <a href="https://discord.gg/c8ZzEN5f9u" target="_blank" class="btn btn-outline">⌘ JOIN DISCORD</a>
+      </div>
     </div>
 
-    <div class="hero-cta">
-      <a href="#details" class="btn btn-primary">► START HERE</a>
-      <a href="https://discord.gg/c8ZzEN5f9u" target="_blank" class="btn btn-outline">⌘ JOIN DISCORD</a>
+    <!-- Dynamic animated retro pixel street scene matching the poster theme -->
+    <div class="pixel-street-scene">
+      <!-- Moving cars (relative to full-screen width so they drive edge-to-edge) -->
+      <img src="assets/car_1.png" class="scene-car-1" alt="Sports Car Red">
+      <img src="assets/car_2.png" class="scene-car-2" alt="Retro Car Blue">
+
+      <div class="scene-viewport">
+        <!-- Ground elements -->
+        <img src="assets/dog.png" class="scene-sprite scene-dog" alt="Dog">
+        <img src="assets/bush.png" class="scene-sprite scene-bush-1" alt="Bush 1">
+        <div class="scene-lamp-wrap">
+          <img src="assets/lamp.png" class="scene-lamp" alt="Street Lamp">
+          <div class="lamp-light"></div>
+        </div>
+        <div class="scene-bench-wrap">
+          <img src="assets/bench.png" class="scene-bench" alt="Bench">
+          <img src="assets/cat.png" class="scene-cat" alt="Cat on Bench">
+        </div>
+        <!-- Shop with peeking bushes behind it -->
+        <img src="assets/bush.png" class="scene-sprite scene-shop-bush-left" alt="Shop Bush Left">
+        <img src="assets/bush.png" class="scene-sprite scene-shop-bush-right" alt="Shop Bush Right">
+        <img src="assets/shop.png" class="scene-sprite scene-shop" alt="Retro Store">
+        <img src="assets/bush.png" class="scene-sprite scene-bush-2" alt="Bush 2">
+
+        <!-- Second street lamp (not flickering) beside humans -->
+        <div class="scene-lamp-wrap scene-lamp-right">
+          <img src="assets/lamp.png" class="scene-lamp" alt="Street Lamp">
+          <div class="lamp-light no-flicker"></div>
+        </div>
+
+        <img src="assets/man.png" class="scene-sprite scene-man" alt="Dev Boy">
+        <img src="assets/woman_1.png" class="scene-sprite scene-woman-1" alt="Artist Girl">
+        <img src="assets/woman_2.png" class="scene-sprite scene-woman-2" alt="Designer Girl">
+
+        <!-- Street pavement -->
+        <div class="street-floor"></div>
+      </div>
     </div>
 
-    <!-- Pixel scene — pixel art game characters row -->
-    <div class="pixel-scene">
-      <svg width="480" height="80" viewBox="0 0 480 80" fill="none" xmlns="http://www.w3.org/2000/svg" style="image-rendering:pixelated;max-width:100%">
-        <!-- Ground line -->
-        <rect x="0" y="70" width="480" height="2" fill="rgba(192,132,252,0.3)"/>
-        <!-- Pixel tree left -->
-        <rect x="10" y="30" width="6" height="40" fill="#4c1d95"/>
-        <rect x="6" y="20" width="14" height="12" fill="#7c3aed"/>
-        <rect x="4" y="10" width="18" height="12" fill="#8b5cf6"/>
-        <rect x="6" y="4" width="14" height="8" fill="#a78bfa"/>
-        <!-- Pixel character 1 (dev) -->
-        <rect x="60" y="46" width="12" height="10" fill="#fcd34d"/>
-        <rect x="58" y="50" width="16" height="6" fill="#d97706"/>
-        <rect x="58" y="56" width="16" height="14" fill="#6d28d9"/>
-        <rect x="56" y="60" width="4" height="10" fill="#5b21b6"/>
-        <rect x="72" y="60" width="4" height="10" fill="#5b21b6"/>
-        <rect x="56" y="56" width="4" height="6" fill="#a78bfa"/>
-        <rect x="72" y="56" width="4" height="6" fill="#a78bfa"/>
-        <rect x="60" y="70" width="4" height="8" fill="#1e1b4b"/>
-        <rect x="68" y="70" width="4" height="8" fill="#1e1b4b"/>
-        <!-- laptop -->
-        <rect x="72" y="62" width="10" height="7" fill="#1e293b"/>
-        <rect x="73" y="63" width="8" height="5" fill="#38bdf8"/>
-        <rect x="72" y="69" width="12" height="1" fill="#334155"/>
-        <!-- Pixel character 2 (artist) -->
-        <rect x="120" y="44" width="12" height="10" fill="#fca5a5"/>
-        <rect x="118" y="48" width="16" height="6" fill="#dc2626"/>
-        <rect x="118" y="54" width="16" height="16" fill="#db2777"/>
-        <rect x="116" y="58" width="4" height="12" fill="#be185d"/>
-        <rect x="134" y="58" width="4" height="12" fill="#be185d"/>
-        <rect x="116" y="54" width="4" height="6" fill="#f9a8d4"/>
-        <rect x="134" y="54" width="4" height="6" fill="#f9a8d4"/>
-        <rect x="120" y="70" width="4" height="8" fill="#4a044e"/>
-        <rect x="128" y="70" width="4" height="8" fill="#4a044e"/>
-        <!-- palette -->
-        <rect x="108" y="60" width="8" height="6" fill="#fef3c7"/>
-        <rect x="109" y="61" width="2" height="2" fill="#ef4444"/>
-        <rect x="112" y="61" width="2" height="2" fill="#22c55e"/>
-        <rect x="109" y="63" width="2" height="2" fill="#3b82f6"/>
-        <rect x="112" y="63" width="2" height="2" fill="#fbbf24"/>
-        <!-- Pixel game controller (center) -->
-        <rect x="185" y="32" width="40" height="28" fill="#312e81" rx="0"/>
-        <rect x="183" y="36" width="44" height="20" fill="#3730a3"/>
-        <rect x="193" y="36" width="4" height="12" fill="#818cf8"/>
-        <rect x="189" y="40" width="12" height="4" fill="#818cf8"/>
-        <rect x="210" y="38" width="4" height="4" fill="#f472b6"/>
-        <rect x="216" y="38" width="4" height="4" fill="#fbbf24"/>
-        <rect x="210" y="44" width="4" height="4" fill="#4ade80"/>
-        <rect x="216" y="44" width="4" height="4" fill="#67e8f9"/>
-        <rect x="200" y="56" width="10" height="4" fill="#c7d2fe"/>
-        <!-- Pixel character 3 (designer) -->
-        <rect x="280" y="44" width="12" height="10" fill="#fde68a"/>
-        <rect x="278" y="48" width="16" height="6" fill="#f59e0b"/>
-        <rect x="278" y="54" width="16" height="16" fill="#0891b2"/>
-        <rect x="276" y="58" width="4" height="12" fill="#0e7490"/>
-        <rect x="294" y="58" width="4" height="12" fill="#0e7490"/>
-        <rect x="276" y="54" width="4" height="6" fill="#67e8f9"/>
-        <rect x="294" y="54" width="4" height="6" fill="#67e8f9"/>
-        <rect x="280" y="70" width="4" height="8" fill="#083344"/>
-        <rect x="288" y="70" width="4" height="8" fill="#083344"/>
-        <!-- tablet -->
-        <rect x="294" y="60" width="10" height="8" fill="#0f172a"/>
-        <rect x="295" y="61" width="8" height="6" fill="#7c3aed"/>
-        <!-- Trophy -->
-        <rect x="350" y="30" width="20" height="24" fill="#f59e0b"/>
-        <rect x="346" y="30" width="28" height="8" fill="#fbbf24"/>
-        <rect x="344" y="32" width="4" height="8" fill="#f59e0b"/>
-        <rect x="372" y="32" width="4" height="8" fill="#f59e0b"/>
-        <rect x="348" y="54" width="24" height="4" fill="#d97706"/>
-        <rect x="344" y="58" width="32" height="4" fill="#b45309"/>
-        <rect x="356" y="36" width="8" height="8" fill="#fef3c7"/>
-        <!-- Pixel tree right -->
-        <rect x="450" y="30" width="6" height="40" fill="#4c1d95"/>
-        <rect x="446" y="20" width="14" height="12" fill="#7c3aed"/>
-        <rect x="444" y="10" width="18" height="12" fill="#8b5cf6"/>
-        <rect x="446" y="4" width="14" height="8" fill="#a78bfa"/>
-        <!-- Stars in sky -->
-        <rect x="40" y="10" width="2" height="2" fill="#fbbf24" opacity="0.8"/>
-        <rect x="90" y="5" width="2" height="2" fill="#fff" opacity="0.5"/>
-        <rect x="160" y="8" width="2" height="2" fill="#67e8f9" opacity="0.7"/>
-        <rect x="240" y="4" width="2" height="2" fill="#fff" opacity="0.4"/>
-        <rect x="310" y="7" width="2" height="2" fill="#c084fc" opacity="0.8"/>
-        <rect x="400" y="5" width="2" height="2" fill="#f472b6" opacity="0.6"/>
-        <rect x="430" y="12" width="2" height="2" fill="#fbbf24" opacity="0.5"/>
+    <div class="scroll-hint">
+      <span>SCROLL</span>
+      <svg width="10" height="14" viewBox="0 0 10 14" fill="none">
+        <rect x="4" y="0" width="2" height="2" fill="currentColor" />
+        <rect x="4" y="4" width="2" height="2" fill="currentColor" />
+        <rect x="4" y="8" width="2" height="2" fill="currentColor" />
+        <rect x="2" y="10" width="6" height="2" fill="currentColor" />
+        <rect x="4" y="12" width="2" height="2" fill="currentColor" />
       </svg>
     </div>
-  </div>
-
-  <div class="scroll-hint">
-    <span>SCROLL</span>
-    <svg width="10" height="14" viewBox="0 0 10 14" fill="none"><rect x="4" y="0" width="2" height="2" fill="currentColor"/><rect x="4" y="4" width="2" height="2" fill="currentColor"/><rect x="4" y="8" width="2" height="2" fill="currentColor"/><rect x="2" y="10" width="6" height="2" fill="currentColor"/><rect x="4" y="12" width="2" height="2" fill="currentColor"/></svg>
-  </div>
-</header>
-
-<div class="divider"></div>
-
-<!-- Tabs container: wraps the main site sections into three tabbed panels -->
-<div class="tabs wrap" id="main-tabs">
-  <nav class="tabs-nav" role="tablist" aria-label="Main sections" style="display:flex;gap:0.5rem;justify-content:center;margin:2rem 0">
-    <button class="tab-btn" role="tab" aria-selected="true" data-target="tab-about">About</button>
-    <button class="tab-btn" role="tab" aria-selected="false" data-target="tab-submit">Submit</button>
-    <button class="tab-btn" role="tab" aria-selected="false" data-target="tab-community">Community</button>
-    <button class="tab-btn" role="tab" aria-selected="false" data-target="tab-events">Events</button>
-  </nav>
-
-  <div class="tabs-panels">
-    <div id="tab-about" class="tab-panel">
-
-<!-- ── ABOUT + THEME ── -->
-<section id="details">
-  <div class="wrap">
-    <div class="section-label">01 ── ABOUT THE JAM</div>
-    <h2 class="section-title">What is <span class="accent">Geek n Jam</span>?</h2>
-
-    <p style="font-size:16px;color:#c4b5d4;max-width:600px;margin-bottom:3rem;line-height:1.8">
-      A month-long pan-India game development jam organized by <strong style="color:var(--c-white)">Geekroom SRMIST</strong>. Solo devs, small teams, artists, designers — build something unforgettable from scratch, then show it off at SRMIST.
-    </p>
-
-    <div style="margin-bottom:3rem" class="fade-up">
-      <div class="theme-card pixel-box">
-        <div style="margin-bottom:0.75rem">
-          <svg width="32" height="32" viewBox="0 0 16 16" fill="none" style="image-rendering:pixelated;margin-bottom:8px">
-            <rect x="6" y="0" width="4" height="2" fill="#fbbf24"/>
-            <rect x="4" y="2" width="8" height="2" fill="#fbbf24"/>
-            <rect x="0" y="4" width="16" height="8" fill="#f59e0b"/>
-            <rect x="2" y="12" width="12" height="2" fill="#fbbf24"/>
-            <rect x="4" y="14" width="8" height="2" fill="#fde68a"/>
-            <rect x="6" y="5" width="2" height="2" fill="#fef3c7"/>
-            <rect x="8" y="7" width="2" height="2" fill="#fef3c7"/>
-            <rect x="6" y="9" width="2" height="2" fill="#fef3c7"/>
-          </svg>
-        </div>
-        <p class="reveal-text">◈ THEME: INVERTED ◈</p>
-        <p class="reveal-sub">Mechanics, narratives, gravity — flip something expected on its head.</p>
-      </div>
-    </div>
-
-    <div class="info-grid fade-up">
-      <div class="info-card">
-        <div class="info-card-label">Duration</div>
-        <div class="info-card-value">1 Month<br><span style="font-size:13px;color:var(--c-muted)">Full build period</span></div>
-      </div>
-      <div class="info-card">
-        <div class="info-card-label">Who can join</div>
-        <div class="info-card-value">College students across India<br><span style="font-size:13px;color:var(--c-muted)">Solo or in teams</span></div>
-      </div>
-      <div class="info-card">
-        <div class="info-card-label">Engines / Tools</div>
-        <div class="info-card-value">Unity · Unreal · Godot<br><span style="font-size:13px;color:var(--c-muted)">Or any custom engine</span></div>
-      </div>
-      <div class="info-card">
-        <div class="info-card-label">Platforms</div>
-        <div class="info-card-value">PC · Mobile · Console · VR<br><span style="font-size:13px;color:var(--c-muted)">All accepted</span></div>
-      </div>
-    </div>
-  </div>
-</section>
-  </section>
-
-  <div class="divider-pixel">◆ ◆ ◆</div>
-
-  <!-- end of ABOUT panel -->
-  </div>
-
-  <div id="tab-submit" class="tab-panel" hidden>
-
-  <!-- ── SUBMISSION ── -->
-  <section>
-  <div class="wrap">
-    <div class="section-label">02 ── WHAT TO SUBMIT</div>
-    <h2 class="section-title">Submission <span class="accent">Requirements</span></h2>
-    <ul class="req-list fade-up">
-      <li><span class="bullet">▶</span>Playable game build — your game must actually run</li>
-      <li><span class="bullet">▶</span>Gameplay video (1–2 minutes) showing core mechanics</li>
-      <li><span class="bullet">▶</span>Source code repository (public GitHub/GitLab)</li>
-      <li><span class="bullet">▶</span>Game description & controls — short and clear</li>
-      <li><span class="bullet">▶</span>Asset credits — list everything you didn't make yourself</li>
-    </ul>
-  </div>
-</section>
-
-  </section>
+  </header>
 
   <div class="divider"></div>
 
-  <!-- ── RULES ── -->
-  <section>
-  <div class="wrap">
-    <div class="section-label">03 ── THE RULES</div>
-    <h2 class="section-title">What's <span class="accent">Allowed</span></h2>
-    <div class="rules-grid fade-up">
-      <div class="rule-pill no"><span class="rule-pill-icon">✕</span>No AI-generated assets</div>
-      <div class="rule-pill no"><span class="rule-pill-icon">✕</span>No plagiarism</div>
-      <div class="rule-pill yes"><span class="rule-pill-icon">✓</span>Paid assets (must declare)</div>
-      <div class="rule-pill no"><span class="rule-pill-icon">✕</span>No pre-built games</div>
-      <div class="rule-pill yes"><span class="rule-pill-icon">✓</span>All engines welcome</div>
-      <div class="rule-pill yes"><span class="rule-pill-icon">✓</span>Solo or team play</div>
-    </div>
-    <p style="margin-top:1.25rem;font-size:13px;color:var(--c-muted);font-family:var(--font-mono)">
-      ⚠ Game must be built entirely during the jam period. Previously built games will not be considered.
-    </p>
-  </div>
-</section>
-  </section>
+  <!-- Tabs container: wraps the main site sections into three tabbed panels -->
+  <div class="tabs wrap" id="main-tabs">
+    <nav class="tabs-nav" role="tablist" aria-label="Main sections"
+      style="display:flex;gap:0.5rem;justify-content:center;margin:2rem 0">
+      <button class="tab-btn" role="tab" aria-selected="true" data-target="tab-about">About</button>
+      <button class="tab-btn" role="tab" aria-selected="false" data-target="tab-submit">Submit</button>
+      <button class="tab-btn" role="tab" aria-selected="false" data-target="tab-community">Community</button>
+      <button class="tab-btn" role="tab" aria-selected="false" data-target="tab-events">Events</button>
+    </nav>
 
-  <div class="divider-pixel">◆ ◆ ◆</div>
+    <div class="tabs-panels">
+      <div id="tab-about" class="tab-panel">
 
-  <!-- keep categories inside submit panel -->
-  <section>
-  <div class="wrap">
-    <div class="section-label">04 ── JUDGING</div>
-    <h2 class="section-title"><span class="accent">Categories</span></h2>
-    <div class="categories-wrap fade-up" style="margin-bottom:3rem">
-      <span class="cat-tag">BEST OVERALL</span>
-      <span class="cat-tag">MOST UNIQUE MECHANIC</span>
-      <span class="cat-tag">BEST VISUALS</span>
-      <span class="cat-tag">BEST STORY</span>
-      <span class="cat-tag">BEST SOUND</span>
-      <span class="cat-tag">+ MORE</span>
-    </div>
+        <!-- ── ABOUT + THEME ── -->
+        <section id="details">
+          <div class="wrap">
+            <div class="section-label">01 ── ABOUT THE JAM</div>
+            <h2 class="section-title">What is <span class="accent">Geek n Jam</span>?</h2>
 
-    <div class="prize-tease fade-up">
-      <span class="trophy">🏆 PRIZES</span>
-      <p>Prizes are being finalized and will be revealed very soon. <span class="blink">_</span></p>
-      <p style="margin-top:0.5rem;font-size:12px;font-family:var(--font-mono);color:rgba(139,127,168,0.6)">Join Discord for the announcement.</p>
-    </div>
-  </div>
-</section>
+            <p style="font-size:16px;color:#c4b5d4;max-width:600px;margin-bottom:3rem;line-height:1.8">
+              A month-long pan-India game development jam organized by <strong style="color:var(--c-white)">Geekroom
+                SRMIST</strong>. Solo devs, small teams, artists, designers — build something unforgettable from
+              scratch, then show it off at SRMIST.
+            </p>
 
-  </section>
+            <div style="margin-bottom:3rem" class="fade-up">
+              <div class="theme-card pixel-box">
+                <div style="margin-bottom:0.75rem">
+                  <svg width="32" height="32" viewBox="0 0 16 16" fill="none"
+                    style="image-rendering:pixelated;margin-bottom:8px">
+                    <rect x="6" y="0" width="4" height="2" fill="#fbbf24" />
+                    <rect x="4" y="2" width="8" height="2" fill="#fbbf24" />
+                    <rect x="0" y="4" width="16" height="8" fill="#f59e0b" />
+                    <rect x="2" y="12" width="12" height="2" fill="#fbbf24" />
+                    <rect x="4" y="14" width="8" height="2" fill="#fde68a" />
+                    <rect x="6" y="5" width="2" height="2" fill="#fef3c7" />
+                    <rect x="8" y="7" width="2" height="2" fill="#fef3c7" />
+                    <rect x="6" y="9" width="2" height="2" fill="#fef3c7" />
+                  </svg>
+                </div>
+                <p class="reveal-text">◈ THEME: INVERTED ◈</p>
+                <p class="reveal-sub">Mechanics, narratives, gravity — flip something expected on its head.</p>
+              </div>
+            </div>
 
-  </div>
-
-  <div id="tab-community" class="tab-panel" hidden>
-
-  <!-- ── WHAT MAKES IT SPECIAL ── -->
-  <section>
-  <div class="wrap">
-    <div class="section-label">05 ── WHY JOIN</div>
-    <h2 class="section-title">What Makes This <span class="accent">Special</span></h2>
-    <div class="special-grid fade-up">
-      <div class="special-card">
-        <div class="special-card-num">01</div>
-        <div class="special-card-title">Live Sessions</div>
-        <div class="special-card-desc">Talks and sessions with actual game industry professionals during the jam.</div>
-      </div>
-      <div class="special-card">
-        <div class="special-card-num">02</div>
-        <div class="special-card-title">Real Exposure</div>
-        <div class="special-card-desc">Real-world game dev experience — not a toy project, a portfolio piece.</div>
-      </div>
-      <div class="special-card">
-        <div class="special-card-num">03</div>
-        <div class="special-card-title">Offline Showcase</div>
-        <div class="special-card-desc">Top entries get showcased live at SRMIST in front of peers and judges.</div>
-      </div>
-    </div>
-  </div>
-</section>
-
-  </section>
-
-  <div class="divider-pixel">◆ ◆ ◆</div>
-
-  <!-- ── SHOWCASE ── -->
-  <section>
-  <div class="wrap">
-    <div class="showcase-banner fade-up">
-      <div>
-        <h3>FINAL SHOWCASE @ SRMIST</h3>
-        <p>Present your game live. Showcase your work in front of peers and judges. Get recognized for your creativity and execution.</p>
-      </div>
-      <div style="flex-shrink:0">
-        <svg width="80" height="80" viewBox="0 0 24 24" fill="none" style="image-rendering:pixelated">
-          <rect x="6" y="8" width="12" height="10" fill="none" stroke="#c084fc" stroke-width="1.5"/>
-          <rect x="8" y="18" width="8" height="2" fill="#c084fc"/>
-          <rect x="6" y="20" width="12" height="1" fill="#c084fc"/>
-          <circle cx="12" cy="13" r="2" stroke="#67e8f9" stroke-width="1.5"/>
-          <rect x="3" y="8" width="3" height="5" rx="0" fill="none" stroke="#a78bfa" stroke-width="1.5"/>
-          <rect x="18" y="8" width="3" height="5" rx="0" fill="none" stroke="#a78bfa" stroke-width="1.5"/>
-        </svg>
-      </div>
-    </div>
-  </div>
-</section>
-
-  </section>
-
-  <div class="divider"></div>
-
-  <!-- ── DISCORD ── -->
-  <section>
-  <div class="wrap fade-up">
-    <div class="discord-block">
-      <div>
-        <div class="label">⌘ COMMUNITY</div>
-        <p>Join the Discord for updates, team finding, and announcements.</p>
-      </div>
-      <a href="https://discord.gg/c8ZzEN5f9u" target="_blank" class="btn btn-outline" style="border-color:#7289da;color:#7289da;box-shadow:4px 4px 0 rgba(114,137,218,0.3)">
-        ⌘ JOIN SERVER
-      </a>
-    </div>
-  </div>
-</section>
-    </section>
-
-    <!-- end of community panel -->
-    </div>
-
-    <div id="tab-events" class="tab-panel" hidden>
-      <section>
-        <div class="wrap">
-          <div class="section-label">06 ── EVENTS</div>
-          <h2 class="section-title">Weekly <span class="accent">Speakers</span></h2>
-          <p style="color:var(--c-muted);margin-bottom:1rem">Eight weekly sessions starting from <strong>May 30, 2026</strong>. Speakers will be announced — currently marked as coming soon.</p>
-
-          <div class="weeks-grid fade-up">
-            <div class="week-card"><div class="week-num">WEEK 1</div><div class="week-dates">May 30 – Jun 5</div><div class="week-speaker">Speaker: Coming soon</div></div>
-            <div class="week-card"><div class="week-num">WEEK 2</div><div class="week-dates">Jun 6 – Jun 12</div><div class="week-speaker">Speaker: Coming soon</div></div>
-            <div class="week-card"><div class="week-num">WEEK 3</div><div class="week-dates">Jun 13 – Jun 19</div><div class="week-speaker">Speaker: Coming soon</div></div>
-            <div class="week-card"><div class="week-num">WEEK 4</div><div class="week-dates">Jun 20 – Jun 26</div><div class="week-speaker">Speaker: Coming soon</div></div>
-            <div class="week-card"><div class="week-num">WEEK 5</div><div class="week-dates">Jun 27 – Jul 3</div><div class="week-speaker">Speaker: Coming soon</div></div>
-            <div class="week-card"><div class="week-num">WEEK 6</div><div class="week-dates">Jul 4 – Jul 10</div><div class="week-speaker">Speaker: Coming soon</div></div>
-            <div class="week-card"><div class="week-num">WEEK 7</div><div class="week-dates">Jul 11 – Jul 17</div><div class="week-speaker">Speaker: Coming soon</div></div>
-            <div class="week-card"><div class="week-num">WEEK 8</div><div class="week-dates">Jul 18 – Jul 24</div><div class="week-speaker">Speaker: Coming soon</div></div>
-          </div>
-
-          <div class="final-week fade-up">
-            <div class="week-card" style="min-width:320px;">
-              <div class="week-num">FINAL WEEK</div>
-              <div class="week-dates">Jul 25 – Jul 31</div>
-              <div class="week-speaker">Final round: DISC · Prize distribution</div>
+            <div class="info-grid fade-up">
+              <div class="info-card">
+                <div class="info-card-label">Duration</div>
+                <div class="info-card-value">1 Month<br><span style="font-size:13px;color:var(--c-muted)">Full build
+                    period</span></div>
+              </div>
+              <div class="info-card">
+                <div class="info-card-label">Who can join</div>
+                <div class="info-card-value">College students across India<br><span
+                    style="font-size:13px;color:var(--c-muted)">Solo or in teams</span></div>
+              </div>
+              <div class="info-card">
+                <div class="info-card-label">Engines / Tools</div>
+                <div class="info-card-value">Unity · Unreal · Godot<br><span
+                    style="font-size:13px;color:var(--c-muted)">Or any custom engine</span></div>
+              </div>
+              <div class="info-card">
+                <div class="info-card-label">Platforms</div>
+                <div class="info-card-value">PC · Mobile · Console · VR<br><span
+                    style="font-size:13px;color:var(--c-muted)">All accepted</span></div>
+              </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+        </section>
+
+        <div class="divider-pixel">◆ ◆ ◆</div>
+
+        <!-- end of ABOUT panel -->
+      </div>
+
+      <div id="tab-submit" class="tab-panel" hidden>
+
+        <!-- ── SUBMISSION ── -->
+        <section>
+          <div class="wrap">
+            <div class="section-label">02 ── WHAT TO SUBMIT</div>
+            <h2 class="section-title">Submission <span class="accent">Requirements</span></h2>
+            <ul class="req-list fade-up">
+              <li><span class="bullet">▶</span>Playable game build — your game must actually run</li>
+              <li><span class="bullet">▶</span>Gameplay video (1–2 minutes) showing core mechanics</li>
+              <li><span class="bullet">▶</span>Source code repository (public GitHub/GitLab)</li>
+              <li><span class="bullet">▶</span>Game description & controls — short and clear</li>
+              <li><span class="bullet">▶</span>Asset credits — list everything you didn't make yourself</li>
+            </ul>
+          </div>
+        </section>
+
+        </section>
+
+        <div class="divider"></div>
+
+        <!-- ── RULES ── -->
+        <section>
+          <div class="wrap">
+            <div class="section-label">03 ── THE RULES</div>
+            <h2 class="section-title">What's <span class="accent">Allowed</span></h2>
+            <div class="rules-grid fade-up">
+              <div class="rule-pill no"><span class="rule-pill-icon">✕</span>No AI-generated assets</div>
+              <div class="rule-pill no"><span class="rule-pill-icon">✕</span>No plagiarism</div>
+              <div class="rule-pill yes"><span class="rule-pill-icon">✓</span>Paid assets (must declare)</div>
+              <div class="rule-pill no"><span class="rule-pill-icon">✕</span>No pre-built games</div>
+              <div class="rule-pill yes"><span class="rule-pill-icon">✓</span>All engines welcome</div>
+              <div class="rule-pill yes"><span class="rule-pill-icon">✓</span>Solo or team play</div>
+            </div>
+            <p style="margin-top:1.25rem;font-size:13px;color:var(--c-muted);font-family:var(--font-mono)">
+              ⚠ Game must be built entirely during the jam period. Previously built games will not be considered.
+            </p>
+          </div>
+        </section>
+        </section>
+
+        <div class="divider-pixel">◆ ◆ ◆</div>
+
+        <!-- keep categories inside submit panel -->
+        <section>
+          <div class="wrap">
+            <div class="section-label">04 ── JUDGING</div>
+            <h2 class="section-title"><span class="accent">Categories</span></h2>
+            <div class="categories-wrap fade-up" style="margin-bottom:3rem">
+              <span class="cat-tag">BEST OVERALL</span>
+              <span class="cat-tag">MOST UNIQUE MECHANIC</span>
+              <span class="cat-tag">BEST VISUALS</span>
+              <span class="cat-tag">BEST STORY</span>
+              <span class="cat-tag">BEST SOUND</span>
+              <span class="cat-tag">+ MORE</span>
+            </div>
+
+            <div class="prize-tease fade-up">
+              <span class="trophy">🏆 PRIZES</span>
+              <p>Prizes are being finalized and will be revealed very soon. <span class="blink">_</span></p>
+              <p style="margin-top:0.5rem;font-size:12px;font-family:var(--font-mono);color:rgba(139,127,168,0.6)">Join
+                Discord for the announcement.</p>
+            </div>
+          </div>
+        </section>
+
+        </section>
+
+      </div>
+
+      <div id="tab-community" class="tab-panel" hidden>
+
+        <!-- ── WHAT MAKES IT SPECIAL ── -->
+        <section>
+          <div class="wrap">
+            <div class="section-label">05 ── WHY JOIN</div>
+            <h2 class="section-title">What Makes This <span class="accent">Special</span></h2>
+            <div class="special-grid fade-up">
+              <div class="special-card">
+                <div class="special-card-num">01</div>
+                <div class="special-card-title">Live Sessions</div>
+                <div class="special-card-desc">Talks and sessions with actual game industry professionals during the
+                  jam.</div>
+              </div>
+              <div class="special-card">
+                <div class="special-card-num">02</div>
+                <div class="special-card-title">Real Exposure</div>
+                <div class="special-card-desc">Real-world game dev experience — not a toy project, a portfolio piece.
+                </div>
+              </div>
+              <div class="special-card">
+                <div class="special-card-num">03</div>
+                <div class="special-card-title">Offline Showcase</div>
+                <div class="special-card-desc">Top entries get showcased live at SRMIST in front of peers and judges.
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        </section>
+
+        <div class="divider-pixel">◆ ◆ ◆</div>
+
+        <!-- ── SHOWCASE ── -->
+        <section>
+          <div class="wrap">
+            <div class="showcase-banner fade-up">
+              <div>
+                <h3>FINAL SHOWCASE @ SRMIST</h3>
+                <p>Present your game live. Showcase your work in front of peers and judges. Get recognized for your
+                  creativity and execution.</p>
+              </div>
+              <div style="flex-shrink:0">
+                <svg width="80" height="80" viewBox="0 0 24 24" fill="none" style="image-rendering:pixelated">
+                  <rect x="6" y="8" width="12" height="10" fill="none" stroke="#c084fc" stroke-width="1.5" />
+                  <rect x="8" y="18" width="8" height="2" fill="#c084fc" />
+                  <rect x="6" y="20" width="12" height="1" fill="#c084fc" />
+                  <circle cx="12" cy="13" r="2" stroke="#67e8f9" stroke-width="1.5" />
+                  <rect x="3" y="8" width="3" height="5" rx="0" fill="none" stroke="#a78bfa" stroke-width="1.5" />
+                  <rect x="18" y="8" width="3" height="5" rx="0" fill="none" stroke="#a78bfa" stroke-width="1.5" />
+                </svg>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        </section>
+
+        <div class="divider"></div>
+
+        <!-- ── DISCORD ── -->
+        <section>
+          <div class="wrap fade-up">
+            <div class="discord-block">
+              <div>
+                <div class="label">⌘ COMMUNITY</div>
+                <p>Join the Discord for updates, team finding, and announcements.</p>
+              </div>
+              <a href="https://discord.gg/c8ZzEN5f9u" target="_blank" class="btn btn-outline"
+                style="border-color:#7289da;color:#7289da;box-shadow:4px 4px 0 rgba(114,137,218,0.3)">
+                ⌘ JOIN SERVER
+              </a>
+            </div>
+          </div>
+        </section>
+        </section>
+
+        <!-- end of community panel -->
+      </div>
+
+      <div id="tab-events" class="tab-panel" hidden>
+        <section>
+          <div class="wrap">
+            <div class="section-label">06 ── EVENTS</div>
+            <h2 class="section-title">Weekly <span class="accent">Speakers</span></h2>
+            <p style="color:var(--c-muted);margin-bottom:1rem">Eight weekly sessions starting from <strong>May 30,
+                2026</strong>. Speakers will be announced — currently marked as coming soon.</p>
+
+            <div class="weeks-grid fade-up">
+              <div class="week-card">
+                <div class="week-num">WEEK 1</div>
+                <div class="week-dates">May 30 – Jun 5</div>
+                <div class="week-speaker">Speaker: Coming soon</div>
+              </div>
+              <div class="week-card">
+                <div class="week-num">WEEK 2</div>
+                <div class="week-dates">Jun 6 – Jun 12</div>
+                <div class="week-speaker">Speaker: Coming soon</div>
+              </div>
+              <div class="week-card">
+                <div class="week-num">WEEK 3</div>
+                <div class="week-dates">Jun 13 – Jun 19</div>
+                <div class="week-speaker">Speaker: Coming soon</div>
+              </div>
+              <div class="week-card">
+                <div class="week-num">WEEK 4</div>
+                <div class="week-dates">Jun 20 – Jun 26</div>
+                <div class="week-speaker">Speaker: Coming soon</div>
+              </div>
+              <div class="week-card">
+                <div class="week-num">WEEK 5</div>
+                <div class="week-dates">Jun 27 – Jul 3</div>
+                <div class="week-speaker">Speaker: Coming soon</div>
+              </div>
+              <div class="week-card">
+                <div class="week-num">WEEK 6</div>
+                <div class="week-dates">Jul 4 – Jul 10</div>
+                <div class="week-speaker">Speaker: Coming soon</div>
+              </div>
+              <div class="week-card">
+                <div class="week-num">WEEK 7</div>
+                <div class="week-dates">Jul 11 – Jul 17</div>
+                <div class="week-speaker">Speaker: Coming soon</div>
+              </div>
+              <div class="week-card">
+                <div class="week-num">WEEK 8</div>
+                <div class="week-dates">Jul 18 – Jul 24</div>
+                <div class="week-speaker">Speaker: Coming soon</div>
+              </div>
+            </div>
+
+            <div class="final-week fade-up">
+              <div class="week-card" style="min-width:320px;">
+                <div class="week-num">FINAL WEEK</div>
+                <div class="week-dates">Jul 25 – Jul 31</div>
+                <div class="week-speaker">Final round: DISC · Prize distribution</div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
     </div>
   </div>
-</div>
 
-<!-- ── FOOTER ── -->
-<footer>
-  <div class="wrap">
-    <div class="pixel-scene" style="margin-bottom:1.5rem">
-      <svg width="240" height="32" viewBox="0 0 240 32" fill="none" style="image-rendering:pixelated">
-        <rect x="0" y="28" width="240" height="2" fill="rgba(192,132,252,0.2)"/>
-        <!-- Pixel text: GEEK N JAM -->
-        <rect x="10" y="8" width="2" height="16" fill="rgba(192,132,252,0.5)"/>
-        <rect x="10" y="8" width="8" height="2" fill="rgba(192,132,252,0.5)"/>
-        <rect x="10" y="16" width="8" height="2" fill="rgba(192,132,252,0.5)"/>
-        <rect x="18" y="8" width="2" height="16" fill="rgba(192,132,252,0.5)"/>
-        <!-- decorative stars -->
-        <rect x="70" y="12" width="2" height="2" fill="#fbbf24" opacity="0.6"/>
-        <rect x="110" y="8" width="2" height="2" fill="#c084fc" opacity="0.7"/>
-        <rect x="150" y="14" width="2" height="2" fill="#67e8f9" opacity="0.5"/>
-        <rect x="190" y="10" width="2" height="2" fill="#f472b6" opacity="0.6"/>
-        <rect x="220" y="8" width="2" height="2" fill="#fbbf24" opacity="0.4"/>
-      </svg>
+  <!-- ── FOOTER ── -->
+  <footer>
+    <div class="wrap">
+      <div class="pixel-scene" style="margin-bottom:1.5rem">
+        <svg width="240" height="32" viewBox="0 0 240 32" fill="none" style="image-rendering:pixelated">
+          <rect x="0" y="28" width="240" height="2" fill="rgba(192,132,252,0.2)" />
+          <!-- Pixel text: GEEK N JAM -->
+          <rect x="10" y="8" width="2" height="16" fill="rgba(192,132,252,0.5)" />
+          <rect x="10" y="8" width="8" height="2" fill="rgba(192,132,252,0.5)" />
+          <rect x="10" y="16" width="8" height="2" fill="rgba(192,132,252,0.5)" />
+          <rect x="18" y="8" width="2" height="16" fill="rgba(192,132,252,0.5)" />
+          <!-- decorative stars -->
+          <rect x="70" y="12" width="2" height="2" fill="#fbbf24" opacity="0.6" />
+          <rect x="110" y="8" width="2" height="2" fill="#c084fc" opacity="0.7" />
+          <rect x="150" y="14" width="2" height="2" fill="#67e8f9" opacity="0.5" />
+          <rect x="190" y="10" width="2" height="2" fill="#f472b6" opacity="0.6" />
+          <rect x="220" y="8" width="2" height="2" fill="#fbbf24" opacity="0.4" />
+        </svg>
+      </div>
+      <p class="tagline">BUILD. EXPERIMENT. INVERT EXPECTATIONS.</p>
+      <div class="social-links" aria-label="Geek n Jam social links">
+        <a class="social-link itch" href="https://itch.io/jam/geek-n-jam" target="_blank" rel="noopener">itch.io -
+          Register</a>
+        <a class="social-link discord" href="https://discord.gg/c8ZzEN5f9u" target="_blank" rel="noopener">Discord</a>
+        <a class="social-link whatsapp" href="https://chat.whatsapp.com/G2aQ3w3JUpC5bc1FgWrqof" target="_blank"
+          rel="noopener">WhatsApp</a>
+        <a class="social-link insta" href="https://www.instagram.com/geekroom_srmist_ghz/" target="_blank"
+          rel="noopener">Instagram</a>
+      </div>
+      <p class="sub">Organized by <strong style="color:var(--c-white)">Geekroom SRMIST</strong> · For updates, use the
+        links above.</p>
     </div>
-    <p class="tagline">BUILD. EXPERIMENT. INVERT EXPECTATIONS.</p>
-    <div class="social-links" aria-label="Geek n Jam social links">
-      <a class="social-link itch" href="https://itch.io/jam/geek-n-jam" target="_blank" rel="noopener">itch.io - Register</a>
-      <a class="social-link discord" href="https://discord.gg/c8ZzEN5f9u" target="_blank" rel="noopener">Discord</a>
-      <a class="social-link whatsapp" href="https://chat.whatsapp.com/G2aQ3w3JUpC5bc1FgWrqof" target="_blank" rel="noopener">WhatsApp</a>
-      <a class="social-link insta" href="https://www.instagram.com/geekroom_srmist_ghz/" target="_blank" rel="noopener">Instagram</a>
-    </div>
-    <p class="sub">Organized by <strong style="color:var(--c-white)">Geekroom SRMIST</strong> · For updates, use the links above.</p>
-  </div>
-</footer>
+  </footer>
 
-<script>
-// Generate stars
-const starsEl = document.getElementById('stars');
-for (let i = 0; i < 120; i++) {
-  const s = document.createElement('div');
-  s.className = 'star';
-  const size = Math.random() < 0.7 ? 1 : 2;
-  s.style.cssText = `width:${size}px;height:${size}px;top:${Math.random()*100}%;left:${Math.random()*100}%;--d:${(Math.random()*4+1).toFixed(1)}s;--dl:${(Math.random()*3).toFixed(1)}s`;
-  starsEl.appendChild(s);
-}
-
-// Marquee
-const marqueeItems = [
-  '🎮 GAME JAM', '✦ BUILD FROM SCRATCH', '⚡ ONE MONTH', '◈ INVERTED THEME',
-  '🏆 PRIZES COMING', '🎯 ALL ENGINES', '✦ PORTFOLIO-READY', '◆ PAN-INDIA',
-  '🎮 GAME JAM', '✦ BUILD FROM SCRATCH', '⚡ ONE MONTH', '◈ INVERTED THEME',
-  '🏆 PRIZES COMING', '🎯 ALL ENGINES', '✦ PORTFOLIO-READY', '◆ PAN-INDIA'
-];
-const inner = document.getElementById('marquee');
-inner.innerHTML = marqueeItems.map(t => `<span class="marquee-item"><span>▶</span>${t}</span>`).join('') +
-                  marqueeItems.map(t => `<span class="marquee-item"><span>▶</span>${t}</span>`).join('');
-
-// Intersection observer for fade-up
-const obs = new IntersectionObserver(entries => {
-  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
-}, { threshold: 0.1 });
-document.querySelectorAll('.fade-up').forEach(el => obs.observe(el));
-
-// Smooth scroll for anchor link
-document.querySelector('[href="#details"]').addEventListener('click', e => {
-  e.preventDefault();
-  document.getElementById('details').scrollIntoView({ behavior: 'smooth' });
-});
-
-// Tabs behavior: simple, accessible
-;(function(){
-  const tabs = document.querySelectorAll('.tab-btn');
-  if (!tabs.length) return;
-  function activate(targetId, setFocus){
-    tabs.forEach(b=>{
-      const sel = b.getAttribute('data-target')===targetId;
-      b.setAttribute('aria-selected', sel? 'true':'false');
-    });
-    document.querySelectorAll('.tab-panel').forEach(p=>{
-      if (p.id===targetId) p.removeAttribute('hidden'); else p.setAttribute('hidden','');
-    });
-    if (setFocus) document.querySelector(`[data-target="${targetId}"]`).focus();
-    try { localStorage.setItem('geeknjam.activeTab', targetId); } catch(e){}
-  }
-  tabs.forEach(btn=> btn.addEventListener('click', ()=> activate(btn.getAttribute('data-target'), false)));
-  // keyboard navigation (left/right)
-  tabs.forEach((btn,i)=> btn.addEventListener('keydown', e=>{
-    if (e.key === 'ArrowRight') tabs[(i+1)%tabs.length].focus();
-    if (e.key === 'ArrowLeft') tabs[(i-1+tabs.length)%tabs.length].focus();
-    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); btn.click(); }
-  }));
-  const saved = (function(){ try{ return localStorage.getItem('geeknjam.activeTab'); }catch(e){return null;} })();
-  const initial = saved && document.getElementById(saved) ? saved : tabs[0].getAttribute('data-target');
-  activate(initial, false);
-})();
-
-// Countdown timers
-(function(){
-  const start = new Date(2026, 4, 30, 0, 0, 0); // May 30, 2026 (months 0-indexed)
-  const end = new Date(2026, 6, 25, 23, 59, 59); // July 25, 2026
-  const elStart = document.getElementById('timer-to-start');
-  const elEnd = document.getElementById('timer-to-end');
-
-  function fmt(ms){
-    if (ms <= 0) return '0d 0h 0m 0s';
-    const s = Math.floor(ms/1000);
-    const days = Math.floor(s/86400);
-    const hrs = Math.floor((s%86400)/3600);
-    const mins = Math.floor((s%3600)/60);
-    const secs = s%60;
-    return `${days}d ${hrs}h ${mins}m ${secs}s`;
-  }
-
-  function tick(){
-    const now = new Date();
-    const toStart = start - now;
-    const toEnd = end - now;
-
-    if (elStart) {
-      if (toStart > 0) elStart.querySelector('.t-val').textContent = fmt(toStart);
-      else elStart.querySelector('.t-val').textContent = 'Started';
-    }
-    if (elEnd) {
-      if (toEnd > 0) elEnd.querySelector('.t-val').textContent = fmt(toEnd);
-      else elEnd.querySelector('.t-val').textContent = 'Ended';
-    }
-  }
-  tick();
-  setInterval(tick, 1000);
-})();
-</script>
+  <script src="script.js" defer></script>
 </body>
+
 </html>
