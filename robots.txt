@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://geeknjam.geekroom-srmist.co.in/sitemap.xml
