@@ -858,7 +858,8 @@ footer a:hover { text-decoration: underline; }
   border: none;
   box-shadow: none;
   image-rendering: pixelated;
-  z-index: 5;
+  z-index: 1;
+  pointer-events: none;
 }
 
 .scene-viewport {
