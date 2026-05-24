@@ -1,25 +1,3 @@
 {
-  "cleanUrls": true,
-  "rewrites": [
-    {
-      "source": "/",
-      "destination": "/WEBISTE.html"
-    },
-    {
-      "source": "/index",
-      "destination": "/WEBISTE.html"
-    },
-    {
-      "source": "/index.html",
-      "destination": "/WEBISTE.html"
-    }
-  ],
-  "headers": [
-    {
-      "source": "/(.*)",
-      "headers": [
-        { "key": "Cache-Control", "value": "public, max-age=0, must-revalidate" }
-      ]
-    }
-  ]
+  "cleanUrls": true
 }
