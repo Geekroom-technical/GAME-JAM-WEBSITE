@@ -127,10 +127,10 @@
 
   <!-- Tabs container: wraps the main site sections into three tabbed panels -->
   <div class="tabs wrap" id="main-tabs">
-    <nav class="tabs-nav" role="tablist" aria-label="Main sections"
-      style="display:flex;gap:0.5rem;justify-content:center;margin:2rem 0">
+    <nav class="tabs-nav" role="tablist" aria-label="Main sections">
       <button class="tab-btn" role="tab" aria-selected="true" data-target="tab-about">About</button>
       <button class="tab-btn" role="tab" aria-selected="false" data-target="tab-timeline">Timeline</button>
+      <button class="tab-btn" role="tab" aria-selected="false" data-target="tab-judging">Prizes & Judging</button>
       <button class="tab-btn" role="tab" aria-selected="false" data-target="tab-submit">Submit</button>
       <button class="tab-btn" role="tab" aria-selected="false" data-target="tab-community">Community</button>
       <button class="tab-btn" role="tab" aria-selected="false" data-target="tab-events">Events</button>
@@ -194,7 +194,6 @@
               </div>
             </div>
           </div>
-        </section>
         </section>
 
         <div class="divider-pixel">◆ ◆ ◆</div>
@@ -363,6 +362,156 @@
 
       </div>
 
+      <div id="tab-judging" class="tab-panel" hidden>
+
+        <!-- ── PRIZES & JUDGING ── -->
+        <section>
+          <div class="wrap">
+            <div class="section-label">04 ── PRIZE POOL</div>
+            <h2 class="section-title">Rewards & <span class="accent">Prizes</span></h2>
+            
+            <div class="prizes-grid fade-up">
+              <!-- 1st Place -->
+              <div class="prize-card gold-card">
+                <span class="prize-badge">🥇 1ST PLACE OVERALL</span>
+                <div class="prize-title">Overall Winner</div>
+                <ul class="prize-rewards">
+                  <li><strong>₹3000</strong> Cash Prize</li>
+                  <li>IGDC 2026 Tickets</li>
+                  <li>Official Winner Trophy</li>
+                  <li>Internship Opportunities</li>
+                </ul>
+              </div>
+
+              <!-- 2nd Place -->
+              <div class="prize-card silver-card">
+                <span class="prize-badge">🥈 2ND PLACE OVERALL</span>
+                <div class="prize-title">Runner Up</div>
+                <ul class="prize-rewards">
+                  <li><strong>₹2000</strong> Cash Prize</li>
+                  <li>IGDC 2026 Tickets</li>
+                  <li>Official Winner Trophy</li>
+                  <li>Internship Opportunities</li>
+                </ul>
+              </div>
+
+              <!-- 3rd Place -->
+              <div class="prize-card bronze-card">
+                <span class="prize-badge">🥉 3RD PLACE OVERALL</span>
+                <div class="prize-title">Second Runner Up</div>
+                <ul class="prize-rewards">
+                  <li><strong>₹1000</strong> Cash Prize</li>
+                  <li>IGDC 2026 Tickets</li>
+                  <li>Official Winner Trophy</li>
+                  <li>Internship Opportunities</li>
+                </ul>
+              </div>
+
+              <!-- Category Winners -->
+              <div class="prize-card category-card">
+                <span class="prize-badge">🎮 CATEGORY WINNERS</span>
+                <div class="prize-title">Category Awards</div>
+                <ul class="prize-rewards">
+                  <li>Steam Games</li>
+                  <li>Official Category Trophies</li>
+                  <li>Internship Opportunities</li>
+                  <li>Sponsored rewards</li>
+                </ul>
+              </div>
+            </div>
+
+            <p style="font-family:var(--font-mono);font-size:12px;color:var(--c-muted);margin-bottom:5rem;text-align:center">
+              * Internship opportunities are from leading Indian game studios. Additional rewards, collaborations, and sponsored prizes may be added during the jam.
+            </p>
+
+            <div class="section-label">05 ── JUDGING</div>
+            <h2 class="section-title">Judging <span class="accent">Categories</span></h2>
+
+            <div class="categories-grid fade-up">
+              <!-- Best Use of Theme -->
+              <div class="category-details-card">
+                <span class="category-icon">🌀</span>
+                <div class="category-name">Best Use of Theme</div>
+                <div class="category-desc">Awarded to the team that interprets and integrates the theme “Inverted” in the most creative, meaningful, or unexpected way.</div>
+              </div>
+
+              <!-- Best Gameplay Design -->
+              <div class="category-details-card">
+                <span class="category-icon">🎮</span>
+                <div class="category-name">Best Gameplay Design</div>
+                <div class="category-desc">Focused on how fun, polished, balanced, and engaging the core gameplay loop is. Controls, level flow, and game feel.</div>
+                <div class="category-highlights">
+                  <span class="category-highlight-tag">Game Feel</span>
+                  <span class="category-highlight-tag">Mechanics</span>
+                  <span class="category-highlight-tag">Flow</span>
+                </div>
+              </div>
+
+              <!-- Best Art Direction -->
+              <div class="category-details-card">
+                <span class="category-icon">🎨</span>
+                <div class="category-name">Best Art Direction</div>
+                <div class="category-desc">Focused on overall visual identity and artistic consistency — including UI, environments, color language, and animation style.</div>
+              </div>
+
+              <!-- Best Narrative -->
+              <div class="category-details-card">
+                <span class="category-icon">📖</span>
+                <div class="category-name">Best Narrative</div>
+                <div class="category-desc">Awarded to the game with the strongest storytelling, worldbuilding, emotional impact, character writing, or narrative structure.</div>
+              </div>
+
+              <!-- Best Music / Audio -->
+              <div class="category-details-card">
+                <span class="category-icon">🎵</span>
+                <div class="category-name">Best Music & Audio</div>
+                <div class="category-desc">Recognizes exceptional soundtracks, environmental ambience, sound effects, voice work, and overall soundscapes.</div>
+              </div>
+
+              <!-- Best Technical Innovation -->
+              <div class="category-details-card">
+                <span class="category-icon">🚀</span>
+                <div class="category-name">Best Technical Innovation</div>
+                <div class="category-desc">Rewards unique technical implementation, procedural systems, advanced shaders, clever rendering, or interesting engine-level work.</div>
+                <div class="category-highlights">
+                  <span class="category-highlight-tag">Procedural</span>
+                  <span class="category-highlight-tag">Shaders</span>
+                  <span class="category-highlight-tag">AI</span>
+                </div>
+              </div>
+
+              <!-- Best Optimization -->
+              <div class="category-details-card">
+                <span class="category-icon">⚙️</span>
+                <div class="category-name">Best Technical Optimization</div>
+                <div class="category-desc">Demonstrates technical efficiency, performance stability, low resource usage, clever compression, or low-end hardware compatibility.</div>
+                <div class="category-highlights">
+                  <span class="category-highlight-tag">Low-end</span>
+                  <span class="category-highlight-tag">Efficiency</span>
+                </div>
+              </div>
+
+              <!-- Best Rookie Game -->
+              <div class="category-details-card">
+                <span class="category-icon">🐣</span>
+                <div class="category-name">Best Rookie Game</div>
+                <div class="category-desc">For beginners or first-time game jam participants who show strong creative spark, technical potential, and execution.</div>
+              </div>
+
+              <!-- Community Voted -->
+              <div class="category-details-card">
+                <span class="category-icon">👥</span>
+                <div class="category-name">Community Voted</div>
+                <div class="category-desc">Chosen directly by community voting and player feedback after playable game builds are officially released on Itch.</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <div class="divider-pixel">◆ ◆ ◆</div>
+
+      </div>
+
       <div id="tab-submit" class="tab-panel" hidden>
 
         <!-- ── SUBMISSION ── -->
@@ -402,34 +551,8 @@
             </p>
           </div>
         </section>
-        </section>
 
         <div class="divider-pixel">◆ ◆ ◆</div>
-
-        <!-- keep categories inside submit panel -->
-        <section>
-          <div class="wrap">
-            <div class="section-label">04 ── JUDGING</div>
-            <h2 class="section-title"><span class="accent">Categories</span></h2>
-            <div class="categories-wrap fade-up" style="margin-bottom:3rem">
-              <span class="cat-tag">BEST OVERALL</span>
-              <span class="cat-tag">MOST UNIQUE MECHANIC</span>
-              <span class="cat-tag">BEST VISUALS</span>
-              <span class="cat-tag">BEST STORY</span>
-              <span class="cat-tag">BEST SOUND</span>
-              <span class="cat-tag">+ MORE</span>
-            </div>
-
-            <div class="prize-tease fade-up">
-              <span class="trophy">🏆 PRIZES</span>
-              <p>Prizes are being finalized and will be revealed very soon. <span class="blink">_</span></p>
-              <p style="margin-top:0.5rem;font-size:12px;font-family:var(--font-mono);color:rgba(139,127,168,0.6)">Join
-                Discord for the announcement.</p>
-            </div>
-          </div>
-        </section>
-
-        </section>
 
       </div>
 
