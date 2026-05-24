@@ -149,6 +149,10 @@ body::before {
   text-shadow: 2px 2px 0 var(--c-bg);
 }
 
+.hero-register {
+  margin-bottom: 1rem;
+}
+
 .hero-controller {
   display: block;
   margin: 0.25rem auto 1rem;
@@ -1677,6 +1681,12 @@ footer a:hover { text-decoration: underline; }
   }
   .organizer-card {
     margin: 0.4rem auto;
+  }
+
+  .hero-register {
+    width: 100%;
+    max-width: 280px;
+    text-align: center;
   }
   
   .hero-cta {
