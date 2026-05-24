@@ -207,3 +207,81 @@ document.querySelector('[href="#details"]').addEventListener('click', e => {
   
   queueFlip();
 })();
+
+// Dynamic active timeline item based on current date
+;(function(){
+  const tlItems = document.querySelectorAll('.tl-track .tl-item');
+  if (!tlItems.length) return;
+  const now = new Date();
+  
+  // Define time ranges for each phase:
+  // Date months are 0-indexed: May is 4, June is 5, July is 6, August is 7.
+  const phases = [
+    { start: new Date(2026, 4, 23), end: new Date(2026, 4, 29, 23, 59, 59) }, // May 23 - May 29
+    { start: new Date(2026, 4, 30), end: new Date(2026, 5, 25, 18, 0, 0) }, // May 30 - Jun 25
+    { start: new Date(2026, 5, 25, 18, 0, 1), end: new Date(2026, 5, 30, 23, 59, 59) }, // Jun 25 - Jun 30
+    { start: new Date(2026, 6, 1), end: new Date(2026, 6, 31, 23, 59, 59) }, // Jul 1 - Jul 31
+    { start: new Date(2026, 7, 1), end: new Date(2026, 7, 20, 23, 59, 59) } // August 2nd week showcase
+  ];
+  
+  let activeIndex = 0;
+  for (let i = 0; i < phases.length; i++) {
+    if (now >= phases[i].start && now <= phases[i].end) {
+      activeIndex = i;
+      break;
+    }
+  }
+  
+  if (now < phases[0].start) activeIndex = 0;
+  if (now > phases[phases.length - 1].end) activeIndex = phases.length - 1;
+  
+  tlItems.forEach((item, idx) => {
+    if (idx === activeIndex) {
+      item.classList.add('active');
+      const card = item.querySelector('.tl-card');
+      if (card && !card.querySelector('.tl-badge')) {
+        const badge = document.createElement('span');
+        badge.className = 'tl-badge';
+        badge.innerHTML = '<i class="fa-solid fa-clock-rotate-left"></i> ACTIVE PHASE';
+        card.appendChild(badge);
+      }
+    } else {
+      item.classList.remove('active');
+      const badge = item.querySelector('.tl-badge');
+      if (badge) badge.remove();
+    }
+  });
+})();
+
+// Translate vertical scroll wheel movements to horizontal scroll in the Schedule Timeline
+;(function(){
+  const scrollContainer = document.querySelector('.tl-scroll');
+  if (!scrollContainer) return;
+  
+  scrollContainer.addEventListener('wheel', (evt) => {
+    if (scrollContainer.scrollWidth > scrollContainer.clientWidth) {
+      if (evt.deltaY !== 0) {
+        evt.preventDefault();
+        scrollContainer.scrollLeft += evt.deltaY * 0.8;
+      }
+    }
+  }, { passive: false });
+})();
+
+// Toggle expand on click for timeline cards (especially helpful for mobile users)
+;(function(){
+  const cards = document.querySelectorAll('.tl-card');
+  cards.forEach(card => {
+    card.addEventListener('click', (evt) => {
+      // Toggle the expanded class on the clicked card
+      const isExpanded = card.classList.contains('expanded');
+      
+      // Collapse all other cards first to keep layout clean
+      cards.forEach(c => c.classList.remove('expanded'));
+      
+      if (!isExpanded) {
+        card.classList.add('expanded');
+      }
+    });
+  });
+})();

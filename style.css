@@ -578,6 +578,49 @@ section {
 .week-num { font-family: var(--font-pixel); color: var(--c-purple); font-size: 12px; margin-bottom: 6px; }
 .week-dates { font-size: 14px; font-weight: 600; color: var(--c-white); margin-bottom: 6px; }
 .week-speaker { font-size: 13px; color: var(--c-muted); font-family: var(--font-mono); }
+.speaker-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+}
+.speaker-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+.speaker-name,
+.speaker-org {
+  color: var(--c-white);
+  text-decoration: none;
+}
+.speaker-name:hover,
+.speaker-org:hover {
+  text-decoration: underline;
+}
+.speaker-linkedin {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.4rem;
+  height: 1.4rem;
+  border-radius: 999px;
+  background: rgba(10, 102, 194, 0.16);
+  color: #8fd1ff;
+  text-decoration: none;
+}
+.speaker-linkedin:hover {
+  background: rgba(10, 102, 194, 0.28);
+  color: #bfe4ff;
+}
+.speaker-linkedin i {
+  font-size: 0.85rem;
+}
+.speaker-org {
+  color: var(--c-muted);
+}
 .final-week { margin-top: 1rem; display: flex; justify-content: center; }
 .final-week .week-card { border-color: var(--c-yellow); box-shadow: 6px 6px 0 rgba(120,53,15,0.08); }
 
@@ -940,52 +983,341 @@ footer a:hover { text-decoration: underline; }
 }
 .marquee-item span { color: var(--c-purple); margin-right: 0.5rem; }
 
-/* ── PROGRESS / TIMELINE ── */
-.timeline {
+/* ── HORIZONTAL ALTERNATING TIMELINE ── */
+.tl-wrapper {
+  position: relative;
+  width: 100%;
+  padding: 1rem 0;
+  overflow: hidden;
+  margin-top: 1rem;
+}
+.tl-scroll {
+  overflow-x: auto;
+  overflow-y: hidden;
+  width: 100%;
+  padding-bottom: 1rem;
+  padding-top: 1rem;
+  position: relative;
+  z-index: 1;
+  scroll-behavior: smooth;
+  /* Hide scrollbars */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+.tl-scroll::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
+.tl-track {
+  display: flex;
+  position: relative;
+  width: max-content;
+  padding: 0 4rem; /* initial and final padding */
+  height: 860px; /* height of alternating layout */
+  align-items: center;
+}
+
+/* Simple solid timeline line matching theme */
+.tl-line {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: rgba(192, 132, 252, 0.4);
+  transform: translateY(-50%);
+  z-index: 2;
+}
+
+/* Timeline item wrapper */
+.tl-item {
   display: flex;
   flex-direction: column;
-  gap: 0;
+  align-items: center;
   position: relative;
-  padding-left: 2rem;
+  min-width: 380px; /* horizontal spacing */
+  height: 100%;
 }
-.timeline::before {
+
+/* Alternating Space Heights & Layouts */
+.tl-top-space, .tl-bottom-space {
+  height: 400px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+.tl-top-space {
+  justify-content: flex-end; /* cards sit right above node */
+  padding-bottom: 30px; /* space for vertical connector line */
+}
+.tl-bottom-space {
+  justify-content: flex-start; /* cards sit right below node */
+  padding-top: 30px; /* space for vertical connector line */
+}
+
+.tl-node-container {
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  width: 100%;
+}
+
+/* Timeline Node centered on timeline bar */
+.tl-node {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--c-bg);
+  border: 3px solid var(--c-purple);
+  z-index: 3;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  cursor: pointer;
+}
+.tl-item:hover .tl-node {
+  transform: scale(1.2);
+  border-color: var(--c-cyan);
+}
+.tl-item.active .tl-node {
+  border-color: var(--c-yellow);
+  background: var(--c-yellow);
+  box-shadow: 0 0 10px var(--c-yellow);
+}
+
+/* Vertical filament connectors for items with top cards */
+.tl-item.pos-top .tl-top-space::after {
   content: '';
   position: absolute;
-  left: 6px;
-  top: 8px;
-  bottom: 8px;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
   width: 2px;
-  background: linear-gradient(180deg, var(--c-purple), var(--c-pink), rgba(192,132,252,0.1));
+  height: 30px;
+  background: var(--c-purple);
+  z-index: 1;
+  transition: background 0.3s ease;
 }
-.tl-item {
-  position: relative;
-  padding: 0 0 2rem 2rem;
+.tl-item.pos-top:hover .tl-top-space::after {
+  background: var(--c-cyan);
 }
-.tl-item::before {
+.tl-item.pos-top.active .tl-top-space::after {
+  background: var(--c-yellow);
+}
+
+/* Vertical filament connectors for items with bottom cards */
+.tl-item.pos-bottom .tl-bottom-space::after {
   content: '';
   position: absolute;
-  left: -1.75rem;
-  top: 6px;
-  width: 10px;
-  height: 10px;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 2px;
+  height: 30px;
   background: var(--c-purple);
-  border: 2px solid var(--c-bg);
-  image-rendering: pixelated;
+  z-index: 1;
+  transition: background 0.3s ease;
 }
-.tl-item.active::before { background: var(--c-yellow); box-shadow: 0 0 8px var(--c-yellow); }
-.tl-label {
+.tl-item.pos-bottom:hover .tl-bottom-space::after {
+  background: var(--c-cyan);
+}
+.tl-item.pos-bottom.active .tl-bottom-space::after {
+  background: var(--c-yellow);
+}
+
+/* Retro Glassmorphic Timeline Card matching main site theme */
+.tl-card {
+  background: var(--c-bg2);
+  border: 2px solid rgba(192, 132, 252, 0.15);
+  box-shadow: 4px 4px 0 rgba(192, 132, 252, 0.1);
+  padding: 1.25rem;
+  border-radius: 8px;
+  width: 340px;
+  text-align: left;
+  transition: max-height 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), border-color 0.3s, box-shadow 0.3s, transform 0.3s;
+  position: relative;
+  max-height: 125px; /* Collapsed to fit neatly within vertical budget */
+  overflow: hidden;
+  cursor: pointer;
+  z-index: 10;
+}
+.tl-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(192, 132, 252, 0.3), transparent);
+}
+.tl-card::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 45px;
+  background: linear-gradient(0deg, var(--c-bg2) 15%, rgba(26, 21, 44, 0));
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  z-index: 2;
+}
+
+/* Custom scrollbars inside expanded card content */
+.tl-card::-webkit-scrollbar {
+  width: 4px;
+}
+.tl-card::-webkit-scrollbar-track {
+  background: transparent;
+}
+.tl-card::-webkit-scrollbar-thumb {
+  background: var(--c-purple);
+  border-radius: 2px;
+}
+
+/* Hover & Explicit Expanded State for showing full lists */
+.tl-card:hover, .tl-card.expanded {
+  max-height: 380px; /* Expands fully to contain all text content with zero scrollbars */
+  overflow: hidden; /* No scrollbars whatsoever! */
+  border-color: var(--c-purple);
+  box-shadow: 6px 6px 0 var(--c-purple), 0 10px 20px rgba(0, 0, 0, 0.3);
+  transform: translateY(-2px);
+  z-index: 99; /* Lift above neighboring connector overlay levels */
+}
+.tl-card:hover::after, .tl-card.expanded::after {
+  opacity: 0;
+}
+
+.tl-item.active .tl-card {
+  border-color: var(--c-yellow);
+  box-shadow: 6px 6px 0 var(--c-yellow);
+  background: linear-gradient(135deg, var(--c-bg2), rgba(255, 184, 108, 0.04));
+}
+.tl-item.active .tl-card::before {
+  background: linear-gradient(90deg, transparent, var(--c-yellow), transparent);
+}
+.tl-item.active .tl-card::after {
+  background: linear-gradient(0deg, #1b162e 15%, rgba(27, 22, 46, 0));
+}
+.tl-item.active .tl-card:hover,
+.tl-item.active .tl-card.expanded {
+  border-color: var(--c-yellow);
+  box-shadow: 6px 6px 0 var(--c-yellow);
+}
+
+/* Highlights (Showcase final card in retro pink) */
+.tl-card.highlight-card {
+  border-color: var(--c-pink);
+  box-shadow: 4px 4px 0 rgba(244, 114, 182, 0.2);
+}
+.tl-card.highlight-card::before {
+  background: linear-gradient(90deg, transparent, var(--c-pink), transparent);
+}
+.tl-card.highlight-card:hover,
+.tl-card.highlight-card.expanded {
+  border-color: var(--c-pink);
+  box-shadow: 6px 6px 0 var(--c-pink), 0 10px 20px rgba(0, 0, 0, 0.3);
+}
+
+.tl-date {
   font-family: var(--font-mono);
   font-size: 11px;
   color: var(--c-cyan);
   letter-spacing: 0.15em;
-  margin-bottom: 0.25rem;
+  margin-bottom: 0.5rem;
+}
+.tl-item.active .tl-date {
+  color: var(--c-yellow);
 }
 .tl-title {
-  font-size: 15px;
+  font-size: 16px;
   color: var(--c-white);
-  font-weight: 500;
+  font-weight: 600;
+  font-family: var(--font-body);
 }
-.tl-desc { font-size: 13px; color: var(--c-muted); margin-top: 0.2rem; }
+.tl-desc {
+  font-size: 13.5px;
+  color: var(--c-muted);
+  margin-top: 0.4rem;
+  line-height: 1.5;
+}
+.tl-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-pixel);
+  font-size: 8px;
+  padding: 5px 10px;
+  background: var(--c-yellow);
+  color: #0d0b14;
+  border-radius: 4px;
+  margin-top: 1.25rem;
+  letter-spacing: 0.05em;
+  animation: pulse-glow 2s infinite alternate;
+}
+
+/* Timeline detail grids & lists inside cards */
+.tl-details-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px dashed rgba(192, 132, 252, 0.15);
+}
+.tl-section-title {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--c-cyan);
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.tl-section-title i {
+  color: var(--c-purple);
+}
+.tl-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  padding-left: 0;
+}
+.tl-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 12.5px;
+  color: #c4b5d4;
+  line-height: 1.4;
+}
+.tl-list li strong {
+  color: var(--c-white);
+}
+.tl-list .bullet {
+  font-family: var(--font-pixel);
+  font-size: 6px;
+  color: var(--c-purple);
+  margin-top: 6px;
+  flex-shrink: 0;
+}
+.tl-list.rewards-list .bullet {
+  font-size: 11px;
+  margin-top: 1px;
+}
+
+@media (max-width: 600px) {
+  .mcu-card {
+    width: 290px;
+    padding: 1.25rem;
+  }
+  .mcu-timeline-item {
+    min-width: 320px;
+  }
+}
 
 /* ── DISCORD CTA ── */
 .discord-block {

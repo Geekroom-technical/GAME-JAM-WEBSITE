@@ -9,6 +9,7 @@
   <link
     href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap"
     rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
   <link rel="stylesheet" href="style.css">
 </head>
 
@@ -129,6 +130,7 @@
     <nav class="tabs-nav" role="tablist" aria-label="Main sections"
       style="display:flex;gap:0.5rem;justify-content:center;margin:2rem 0">
       <button class="tab-btn" role="tab" aria-selected="true" data-target="tab-about">About</button>
+      <button class="tab-btn" role="tab" aria-selected="false" data-target="tab-timeline">Timeline</button>
       <button class="tab-btn" role="tab" aria-selected="false" data-target="tab-submit">Submit</button>
       <button class="tab-btn" role="tab" aria-selected="false" data-target="tab-community">Community</button>
       <button class="tab-btn" role="tab" aria-selected="false" data-target="tab-events">Events</button>
@@ -198,6 +200,167 @@
         <div class="divider-pixel">◆ ◆ ◆</div>
 
         <!-- end of ABOUT panel -->
+      </div>
+
+      <div id="tab-timeline" class="tab-panel" hidden>
+
+        <!-- ── TIMELINE ── -->
+        <section style="padding: 3rem 0 4rem;">
+          <div class="wrap">
+            <div class="section-label">01.5 ── THE SCHEDULE</div>
+            <h2 class="section-title">Geek n Jam 2026 — <span class="accent">Timeline</span></h2>
+          </div>
+
+          <!-- Horizontal alternating timeline wrapper -->
+          <div class="tl-wrapper fade-up">
+            <div class="tl-scroll">
+              <div class="tl-track">
+                <!-- Simple solid timeline bar -->
+                <div class="tl-line"></div>
+
+                <!-- May 23 (Odd - Card goes to Bottom) -->
+                <div class="tl-item pos-bottom active">
+                  <div class="tl-top-space"></div>
+                  
+                  <div class="tl-node-container">
+                    <div class="tl-node"></div>
+                  </div>
+                  
+                  <div class="tl-bottom-space">
+                    <div class="tl-card">
+                      <div class="tl-date">MAY 23</div>
+                      <h3 class="tl-title">Theme Reveal & Kickoff</h3>
+                      <p class="tl-desc">Introduction to the jam, rules, categories, roadmap, and official theme announcement.</p>
+                      <span class="tl-badge"><i class="fa-solid fa-clock-rotate-left"></i> ACTIVE PHASE</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- May 30 — June 25 (Even - Card goes to Top) -->
+                <div class="tl-item pos-top">
+                  <div class="tl-top-space">
+                    <div class="tl-card">
+                      <div class="tl-date">MAY 30 — JUNE 25</div>
+                      <h3 class="tl-title">Main Build Period</h3>
+                      <p class="tl-desc">The core development phase of Geek n Jam. Build solo or in squads, polish mechanics, and form games from scratch.</p>
+
+                      <div class="tl-details-grid">
+                        <div class="tl-details-section">
+                          <div class="tl-section-title"><i class="fa-solid fa-gamepad"></i> Development roadmap:</div>
+                          <ul class="tl-list">
+                            <li><span class="bullet">▶</span><strong>Form teams</strong> or work solo</li>
+                            <li><span class="bullet">▶</span><strong>Build your games</strong> from scratch</li>
+                            <li><span class="bullet">▶</span>Attend online sessions and skill workshops</li>
+                            <li><span class="bullet">▶</span>Interact with industry mentors & speakers</li>
+                            <li><span class="bullet">▶</span>Submit playable builds on itch.io</li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="tl-node-container">
+                    <div class="tl-node"></div>
+                  </div>
+                  
+                  <div class="tl-bottom-space"></div>
+                </div>
+
+                <!-- June 25 (Odd - Card goes to Bottom) -->
+                <div class="tl-item pos-bottom">
+                  <div class="tl-top-space"></div>
+                  
+                  <div class="tl-node-container">
+                    <div class="tl-node"></div>
+                  </div>
+                  
+                  <div class="tl-bottom-space">
+                    <div class="tl-card">
+                      <div class="tl-date">JUNE 25</div>
+                      <h3 class="tl-title">Submission Deadline</h3>
+                      <p class="tl-desc">The final milestone. Submit your creation before the clock runs out.</p>
+
+                      <div class="tl-details-grid">
+                        <div class="tl-details-section">
+                          <div class="tl-section-title"><i class="fa-solid fa-file-arrow-up"></i> Teams must submit:</div>
+                          <ul class="tl-list">
+                            <li><span class="bullet">▶</span><strong>Playable game build</strong> (Web, PC, Mobile)</li>
+                            <li><span class="bullet">▶</span><strong>Gameplay video</strong> (1–2 minutes showcasing loop)</li>
+                            <li><span class="bullet">▶</span><strong>Source repository</strong> (public Git link)</li>
+                            <li><span class="bullet">▶</span><strong>Game description & controls</strong></li>
+                            <li><span class="bullet">▶</span><strong>Asset credits</strong> (external declarations)</li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- July 1 — July 31 (Even - Card goes to Top) -->
+                <div class="tl-item pos-top">
+                  <div class="tl-top-space">
+                    <div class="tl-card">
+                      <div class="tl-date">JULY 1 — JULY 31</div>
+                      <h3 class="tl-title">Bonus Points & Judging</h3>
+                      <p class="tl-desc">Expand your game, earn extra credit, and showcase real-world development steps while judges evaluate.</p>
+
+                      <div class="tl-details-grid">
+                        <div class="tl-details-section">
+                          <div class="tl-section-title"><i class="fa-solid fa-star"></i> Earn Bonus Points:</div>
+                          <ul class="tl-list" style="margin-bottom:0.75rem">
+                            <li><span class="bullet">▶</span>Publish trailers, devlogs, & postmortems</li>
+                            <li><span class="bullet">▶</span>Port platforms, marketing, & polish UI</li>
+                          </ul>
+                          <div class="tl-section-title"><i class="fa-solid fa-gavel"></i> Judges evaluate:</div>
+                          <ul class="tl-list">
+                            <li><span class="bullet">▶</span>Gameplay, Theme, Art, Audio & Innovation</li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="tl-node-container">
+                    <div class="tl-node"></div>
+                  </div>
+                  
+                  <div class="tl-bottom-space"></div>
+                </div>
+
+                <!-- 2nd week of august (Odd - Card goes to Bottom) -->
+                <div class="tl-item pos-bottom">
+                  <div class="tl-top-space"></div>
+                  
+                  <div class="tl-node-container">
+                    <div class="tl-node"></div>
+                  </div>
+                  
+                  <div class="tl-bottom-space">
+                    <div class="tl-card highlight-card">
+                      <div class="tl-date">2ND WEEK OF AUGUST</div>
+                      <h3 class="tl-title">Offline Showcase & Prizes</h3>
+                      <p class="tl-desc">The grand finale! Invite-only showcase live at the **SRMIST NCR Campus** with live demos & ceremonies.</p>
+
+                      <div class="tl-details-grid">
+                        <div class="tl-details-section">
+                          <div class="tl-section-title"><i class="fa-solid fa-trophy"></i> Rewards & Prizes:</div>
+                          <ul class="tl-list rewards-list">
+                            <li><span class="bullet">🎁</span><strong>Cash prizes</strong> & trophies for top teams</li>
+                            <li><span class="bullet">🎁</span><strong>IGDC 2026 tickets</strong> & Steam keys</li>
+                            <li><span class="bullet">🎁</span><strong>Internship offers</strong> from leading Indian studios</li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <div class="divider-pixel">◆ ◆ ◆</div>
+
       </div>
 
       <div id="tab-submit" class="tab-panel" hidden>
@@ -378,7 +541,16 @@
               <div class="week-card">
                 <div class="week-num">WEEK 4</div>
                 <div class="week-dates">Jun 20 – Jun 26</div>
-                <div class="week-speaker">Speaker: Coming soon</div>
+                <div class="week-speaker speaker-meta">
+                  <div class="speaker-row">
+                    <span>Speaker:</span>
+                    <a class="speaker-name" href="https://www.linkedin.com/in/ritik-mishra-0ba500188/" target="_blank" rel="noopener noreferrer">Ritik Mishra</a>
+                    <a class="speaker-linkedin" href="https://www.linkedin.com/in/ritik-mishra-0ba500188/" target="_blank" rel="noopener noreferrer" aria-label="Ritik Mishra on LinkedIn">
+                      <i class="fa-brands fa-linkedin-in" aria-hidden="true"></i>
+                    </a>
+                  </div>
+                  <a class="speaker-org" href="https://www.underdogsthestudio.com/" target="_blank" rel="noopener noreferrer">underDOGS studios</a>
+                </div>
               </div>
               <div class="week-card">
                 <div class="week-num">WEEK 5</div>
@@ -406,7 +578,7 @@
               <div class="week-card" style="min-width:320px;">
                 <div class="week-num">FINAL WEEK</div>
                 <div class="week-dates">Jul 25 – Jul 31</div>
-                <div class="week-speaker">Final round: DISC · Prize distribution</div>
+                <div class="week-speaker">Final round: DISC</div>
               </div>
             </div>
           </div>
