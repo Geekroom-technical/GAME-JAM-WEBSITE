@@ -14,6 +14,27 @@ for (let i = 0; i < 120; i++) {
   starsEl.appendChild(s);
 }
 
+// Sparse decorative sparkles (few, randomly placed across the page)
+;(function createSparkles(){
+  const sparkleCount = 10; // a few only
+  const variants = ['assets/sparkle1.png','assets/sparkle2.png','assets/star.png'];
+  for (let i=0;i<sparkleCount;i++){
+    const img = document.createElement('img');
+    const src = variants[Math.floor(Math.random()*variants.length)];
+    img.src = src;
+    img.className = 'sparkle';
+    const size = Math.floor(Math.random()*18)+10; // 10-28px
+    img.style.width = size + 'px';
+    img.style.height = 'auto';
+    img.style.left = (Math.random()*90 + 5) + '%';
+    img.style.top = (Math.random()*85 + 5) + '%';
+    img.style.setProperty('--d', (Math.random()*6+3).toFixed(1)+'s');
+    img.style.setProperty('--t', (Math.random()*2+1.2).toFixed(2)+'s');
+    img.style.animationDelay = (Math.random()*4).toFixed(2) + 's';
+    document.body.appendChild(img);
+  }
+})();
+
 // Marquee
 const marqueeItems = [
   '🎮 GAME JAM', '✦ BUILD FROM SCRATCH', '⚡ ONE MONTH', '◈ INVERTED THEME',
@@ -22,8 +43,10 @@ const marqueeItems = [
   '🏆 PRIZES COMING', '🎯 ALL ENGINES', '✦ PORTFOLIO-READY', '◆ PAN-INDIA'
 ];
 const inner = document.getElementById('marquee');
-inner.innerHTML = marqueeItems.map(t => `<span class="marquee-item"><span>▶</span>${t}</span>`).join('') +
-                  marqueeItems.map(t => `<span class="marquee-item"><span>▶</span>${t}</span>`).join('');
+if (inner) {
+  inner.innerHTML = marqueeItems.map(t => `<span class="marquee-item"><span>▶</span>${t}</span>`).join('') +
+                    marqueeItems.map(t => `<span class="marquee-item"><span>▶</span>${t}</span>`).join('');
+}
 
 // Intersection observer for fade-up
 const obs = new IntersectionObserver(entries => {

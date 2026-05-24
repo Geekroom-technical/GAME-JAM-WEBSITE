@@ -17,10 +17,6 @@
   <!-- Star field -->
   <div class="stars" id="stars"></div>
 
-  <!-- ── MARQUEE ── -->
-  <div class="marquee-wrap">
-    <div class="marquee-inner" id="marquee"></div>
-  </div>
 
   <!-- ── HERO ── -->
   <header class="hero">
@@ -33,10 +29,19 @@
 
     <div class="wrap" style="position:relative;z-index:2">
 
+      <div class="partner-logos" aria-hidden="false">
+        <img src="assets/logo/game_connect.png" alt="Game Connect" class="logo-game-connect">
+        <img src="assets/logo/gdai.png" alt="GDAI" class="logo-gdai">
+      </div>
       <h1 class="hero-title">
         GEEK <span>n</span> JAM
       </h1>
-      <p class="hero-collab">IN COLLABORATION WITH GAME DEVELOPERS ASSOCIATION OF INDIA</p>
+      <div class="organizer-card" aria-hidden="false">
+        <div class="organized-label">ORGANIZED BY</div>
+        <a href="https://www.geekroom-srmist.co.in/" target="_blank" rel="noopener noreferrer" title="Geekroom website">
+          <img src="assets/logo/geekroom.png" alt="Geekroom" class="logo-geekroom">
+        </a>
+      </div>
       <!-- Timers: countdown to start (May 30) and countdown to end (July 25) -->
       <div class="timers" aria-hidden="false" style="margin-top:0.6rem">
         <div class="timer" id="timer-to-start" aria-live="polite" role="status">Starts in: <span class="t-val">--</span>
@@ -45,6 +50,7 @@
         </div>
       </div>
       <p class="hero-sub">Build · Experiment · Invert Expectations</p>
+      <img src="assets/controller.png" alt="Game controller" class="hero-controller">
 
       <p class="hero-desc">
         A month-long <strong>game development jam</strong> bringing together developers, artists, and designers to build
@@ -430,13 +436,36 @@
       </div>
       <p class="tagline">BUILD. EXPERIMENT. INVERT EXPECTATIONS.</p>
       <div class="social-links" aria-label="Geek n Jam social links">
-        <a class="social-link itch" href="https://itch.io/jam/geek-n-jam" target="_blank" rel="noopener">itch.io -
-          Register</a>
-        <a class="social-link discord" href="https://discord.gg/c8ZzEN5f9u" target="_blank" rel="noopener">Discord</a>
-        <a class="social-link whatsapp" href="https://chat.whatsapp.com/G2aQ3w3JUpC5bc1FgWrqof" target="_blank"
-          rel="noopener">WhatsApp</a>
-        <a class="social-link insta" href="https://www.instagram.com/geekroom_srmist_ghz/" target="_blank"
-          rel="noopener">Instagram</a>
+        <a class="social-link social-link-icon itch" href="https://itch.io/jam/geek-n-jam" target="_blank"
+          rel="noopener" aria-label="itch.io Register">
+          <img src="assets/social/itch.png" alt="" class="social-icon social-icon-normal">
+          <img src="assets/social/pressed/itch.png" alt="" class="social-icon social-icon-pressed">
+          <span class="sr-only">itch.io - Register</span>
+        </a>
+        <a class="social-link social-link-icon discord" href="https://discord.gg/c8ZzEN5f9u" target="_blank"
+          rel="noopener" aria-label="Discord">
+          <img src="assets/social/discord.png" alt="" class="social-icon social-icon-normal">
+          <img src="assets/social/pressed/discord.png" alt="" class="social-icon social-icon-pressed">
+          <span class="sr-only">Discord</span>
+        </a>
+        <a class="social-link social-link-icon whatsapp" href="https://chat.whatsapp.com/G2aQ3w3JUpC5bc1FgWrqof"
+          target="_blank" rel="noopener" aria-label="WhatsApp">
+          <img src="assets/social/whatsapp.png" alt="" class="social-icon social-icon-normal">
+          <img src="assets/social/pressed/whatsapp.png" alt="" class="social-icon social-icon-pressed">
+          <span class="sr-only">WhatsApp</span>
+        </a>
+        <a class="social-link social-link-icon insta" href="https://www.instagram.com/geekroom_srmist_ghz/"
+          target="_blank" rel="noopener" aria-label="Instagram">
+          <img src="assets/social/instagram.png" alt="" class="social-icon social-icon-normal">
+          <img src="assets/social/pressed/instagram.png" alt="" class="social-icon social-icon-pressed">
+          <span class="sr-only">Instagram</span>
+        </a>
+        <a class="social-link social-link-icon youtube" href="https://www.youtube.com/@GeekroomSRMIST"
+          target="_blank" rel="noopener" aria-label="YouTube">
+          <img src="assets/social/youtube.png" alt="" class="social-icon social-icon-normal">
+          <img src="assets/social/pressed/youtube.png" alt="" class="social-icon social-icon-pressed">
+          <span class="sr-only">YouTube</span>
+        </a>
       </div>
       <p class="sub">Organized by <strong style="color:var(--c-white)">Geekroom SRMIST</strong> · For updates, use the
         links above.</p>
