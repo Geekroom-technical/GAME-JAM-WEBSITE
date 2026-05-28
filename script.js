@@ -1,5 +1,29 @@
 // Generate stars
 const starsEl = document.getElementById('stars');
+const placedStars = [];
+
+function getRandomStarPosition(minDistance) {
+  let attempt = 0;
+  while (attempt < 30) {
+    const x = Math.random() * 100;
+    const y = Math.random() * 100;
+    const isFarEnough = placedStars.every(star => {
+      const dx = x - star.x;
+      const dy = y - star.y;
+      return Math.hypot(dx, dy) >= minDistance + star.size * 0.35;
+    });
+    if (isFarEnough) {
+      return { x, y };
+    }
+    attempt += 1;
+  }
+
+  return {
+    x: Math.random() * 100,
+    y: Math.random() * 100,
+  };
+}
+
 for (let i = 0; i < 120; i++) {
   const s = document.createElement('div');
   let size = Math.random() < 0.7 ? 1 : 2;
@@ -10,7 +34,10 @@ for (let i = 0; i < 120; i++) {
   } else {
     s.className = 'star';
   }
-  s.style.cssText = `width:${size}px;height:${size}px;top:${Math.random()*100}%;left:${Math.random()*100}%;--d:${(Math.random()*4+1).toFixed(1)}s;--dl:${(Math.random()*3).toFixed(1)}s`;
+  const minDistance = isPixelStar ? 10 : 3.5;
+  const position = getRandomStarPosition(minDistance);
+  placedStars.push({ x: position.x, y: position.y, size });
+  s.style.cssText = `width:${size}px;height:${size}px;top:${position.y}%;left:${position.x}%;--d:${(Math.random()*4+1).toFixed(1)}s;--dl:${(Math.random()*3).toFixed(1)}s`;
   starsEl.appendChild(s);
 }
 
@@ -31,7 +58,7 @@ for (let i = 0; i < 120; i++) {
     img.style.setProperty('--d', (Math.random()*6+3).toFixed(1)+'s');
     img.style.setProperty('--t', (Math.random()*2+1.2).toFixed(2)+'s');
     img.style.animationDelay = (Math.random()*4).toFixed(2) + 's';
-    document.body.appendChild(img);
+    starsEl.appendChild(img);
   }
 })();
 
